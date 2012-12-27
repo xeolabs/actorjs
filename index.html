@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/html" xmlns="http://www.w3.org/1999/html">
+<head>
+    <title>ActorJS - Intro</title>
+
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+
+    <script src="libs/jquery-lib.1.7.1.min.js"></script>
+
+    <link href="http://fonts.googleapis.com/css?family=Raleway:100" rel="stylesheet" type="text/css">
+    <link href="http://fonts.googleapis.com/css?family=Open+Sans:300" rel="stylesheet" type="text/css">
+    <link rel="stylesheet"
+          href="http://fonts.googleapis.com/css?family=Open+Sans:regular,semibold,italic,italicsemibold|Droid+Sans+Mono&v2">
+
+    <link href="css/styles.css" rel="stylesheet"/>
+</head>
+<body>
+
+<div id="container">
+<img style="float: right; padding-top:35px;" src="images/a-xeolabs-project.png">
+
+<h1>ActorJS</h1>
+
+<p class="beta">BETA</p>
+<br>
+
+<p>ActorJS is a JavaScript framework which structures your code as <a
+        href="http://en.wikipedia.org/wiki/Actor_model">actors</a> that communicate via
+    asynchronous <a href="http://en.wikipedia.org/wiki/JSON-RPC">JSON-RPC</a> and <a
+            href="http://en.wikipedia.org/wiki/Publish%E2%80%93subscribe_pattern">publish-subscribe</a> messaging.</p>
+
+<p>With ActorJS, you define actor types as <a
+        href="http://requirejs.org/">RequireJS</a> modules,
+    then fire JSON-RPC calls to instantiate them, call their methods, subscribe to their publications, kill them, and
+    so forth. You can even distribute your actors across <a href="http://en.wikipedia.org/wiki/Web_worker">Web
+        Workers</a>, giving you the capability to offload CPU-intensive processes onto separate threads.</p>
+
+<p>The idea is to create an abstract and modular API on the front of your code, like this:</p>
+
+
+<div style="width: 100%; height:450px; text-align:center; padding-top: 40px;padding-right:0; margin-right: 0;">
+    <div style="float: left; text-align: left; width:40%;height: auto;">
+
+        <pre style="background: white; border:none; box-shadow: none;">
+    ActorJS.addActor({
+        type: "objects/prims/teapot",
+        actorId: "myTeapot"
+    })
+
+    .addActor({
+        type: "scene/camera",
+        actorId: "myCamera"
+    })
+
+    .call("myTeapot/startSpinning")
+
+    .call("myCamera/setEye", {
+        x: -30,
+        y: 0,
+        z: 50
+    });</pre>
+    </div>
+    <div style="float: right; width:60%; height: auto;padding-right:0; margin-right: 0;">
+        <img src="images/actorjs-concept.jpg" style="padding-right:0; margin-right: 0; float:right;">
+    </div>
+
+</div>
+
+
+<p>I created ActorJS for building apps on <a
+        href="http://scenejs.org">SceneJS</a>. Take a look at <a href="">SceneJS Grid</a> to see that
+    happening, or keep reading to learn the essentials of ActorJS and how to use it with your choice of alternative
+    libraries.</p>
+
+<br>
+
+<h1>User Guide</h1>
+
+<div style="width: 100%;">
+    <div style="margin-left:auto; margin-right:auto;">
+        <ol>
+            <li><a href="#helloWorld">Hello, World!</a></li>
+            <li><a href="#actorHierarchies">Actor Hierarchies</a></li>
+            <li><a href="#injectingResources">Injecting Resources for Actors</a></li>
+            <li><a href="#webWorkers">Actors in Web Workers</a></li>
+        </ol>
+    </div>
+</div>
+<a name="helloWorld"><h2>1. Hello, World!</h2></a>
+
+<p>Let's start with a single actor that just publishes whatever message we send it.</p>
+
+<p>First, tell ActorJS where to find actor types:</p>
+<pre>
+    ActorJS.configure({
+        actorClassPath:"actors/"
+    });
+</pre>
+
+<p>Now define our actor type in <a
+        href="actors/ex1/person.js"><code>actors/ex1/person.js</code></a>.</p>
+
+<p>Our actor type has a <code>myName</code> property and a <code>saySomething</code> method that publishes incoming
+    messages:</p>
+    <pre>
+    define(function () {
+
+        return function (cfg) {
+
+            var myName = cfg.myName;
+
+            this.saySomething = function(params) {
+                this.publish("saidSomething", { saidWhat: myName + " says: " + params.message });
+            };
+        };
+   });</pre>
+
+<p>Add an instance of that actor type, giving it an ID (mandatory) and a value for its <code>myName</code> property:</p>
+
+<pre>
+    ActorJS.addActor({
+        type:"ex1/person",
+        actorId:"foo",
+        myName: "Foo"
+    });
+ </pre>
+
+<p>Subscribe to the message the actor publishes:</p>
+<pre>
+    ActorJS.subscribe("foo/saidSomething", function(params) {
+        alert(params.saidWhat);
+    });
+ </pre>
+
+<p>Now call the actor's <code>saySomething</code> method, causing it to publish that message.
+</p>
+
+<pre>
+    ActorJS.call("foo/saySomething", {
+        message: "Hello, World!"
+    });
+ </pre>
+
+<p>At some point you may want to remove the actor:</p>
+<pre>
+    ActorJS.removeActor({
+        actorId: "foo"
+    });
+ </pre>
+
+<p><a href="ex1.html" target="_other">Run this example &gt;&gt</a></p>
+
+<h3>Notes</h3>
+<ul class="notes">
+    <li><p>The <code>publish</code> method magically appeared on our actor because ActorJS augments each actor instance
+        we create with various methods for managing child actors, messaging, and so on.</p></li>
+    <li><p>See how we can call that <code>saySomething</code> method on the actor without waiting for it to be
+        instantiated - ActorJS achieves this through the use of <a
+                href="http://en.wikipedia.org/wiki/Futures_and_promises">futures</a>,
+        buffering calls to the actor until it exists.
+    </p></li>
+</ul>
+
+
+<div class="pageSeparator"></div>
+
+<a name="actorHierarchies"><h2>2. Actor Hierarchies</h2></a>
+
+<p>In practice, you would have hierarchies of actors that manage each other.</p>
+
+<p>Lets define a second actor type in file <a href="actors/ex2/group.js"><code>actors/ex2/group.js</code></a>,
+    which will manage two child instances of the actor type we defined earlier, plus provide a <code>saySomething</code>
+    method that will route messages to each of
+    the children:</p>
+    <pre>
+    define(function () {
+
+        return function (cfg) {
+
+            this.addActor({
+                type:"demos/myFirstActor",
+                actorId:"foo",
+                myName: "Foo"
+            });
+
+            this.addActor({
+                type:"demos/myFirstActor",
+                actorId:"bar",
+                myName: "Bar"
+            });
+
+            this.saySomething = function(params) {
+                this.call("foo/saySomething", params);
+                this.call("bar/saySomething", params);
+            };
+        };
+   });</pre>
+
+
+<p>Now instantiate the parent actor:</p>
+    <pre>
+    ActorJS.addActor({
+        type:"demos/mySecondActor",
+        actorId:"baz"
+    });</pre>
+
+<p>Call the parent actor's <code>saySomething</code> method:</p>
+<pre>
+    ActorJS.call("baz/saySomething", {
+            message: "Hello, World!"
+    });</pre>
+
+<p>We can also drill down and call that method on each child actor individually:</p>
+<pre>
+    ActorJS.call("baz/foo/saySomething", {
+            message: "Hello, World!"
+    });
+
+    ActorJS.call("baz/bar/saySomething", {
+            message: "Hello, World!"
+    });</pre>
+
+<p><a href="ex2.html" target="_other">Run this example &gt;&gt</a></p>
+
+<h3>Notes</h3>
+<ul class="notes">
+    <li><p>See how method calls have paths that drill down into the actor hierarchy. You can think of each actor as a
+        sort of
+        directory that contains the actor's methods, publications and child actors.</p>
+    </li>
+    <li><p>When an actor is removed, ActorJS automatically destroys any child actors and subscriptions it created.</p>
+    </li>
+</ul>
+
+
+<div class="pageSeparator"></div>
+
+<a name="injectingResources"><h2>3. Injecting Resources for Actors</h2></a>
+
+<p>Parent actors can provide resource objects for child actors. In <a href="">SceneJS Grid</a>, for example, we have an
+    actor
+    type
+    that creates and provides a <code>SceneJS.Scene</code> for its child actors (camera, teapot etc) to manipulate.</p>
+
+<p>Lets define a variation on the parent actor from the last example, say in <a
+        href="actors/ex3/group.js"><code>actors/ex3/group.js</code></a>,
+    which will provide a simple utility resource through which the child actors can say their thing:</p>
+    <pre>define(function () {
+
+    return function (cfg) {
+
+        this.setObject("myFirstResource", {
+            saySomething: function(sayWhat) {
+                alert(sayWhat);
+            }
+        });
+
+        this.addActor({
+            type:"ex3/person",
+            actorId:"foo",
+            myName:"Foo"
+        });
+
+        this.addActor({
+            type:"ex3/person",
+            actorId:"bar",
+            myName:"Bar"
+        });
+
+        this.saySomething = function (params) {
+            this.call("foo/saySomething", params);
+            this.call("bar/saySomething", params);
+        };
+    };
+});</pre>
+
+
+<p>The type for the child actors, defined in <a href="actors/ex3/group.js"><code>actors/ex3/person.js</code></a>,
+    will send its message via the resource:</p>
+
+    <pre>define(function () {
+
+    return function (cfg) {
+
+        var myName = cfg.myName;
+
+        var myResource = this.getObject("myFirstResource");
+
+        this.saySomething = function (params) {
+            myResource.saySomething(myName + " says: " + params.message );
+        };
+    };
+});</pre>
+
+<p>Finally, instantiate that parent actor and call its <code>saySomething</code> method:</p>
+    <pre>
+    ActorJS.addActor({
+        type:"demos/mySecondActor",
+        actorId:"baz"
+    });
+
+    ActorJS.call("baz/saySomething", {
+            message: "Hello, World!"
+    });</pre>
+
+<p>Note that we could have created that resource globally on ActorJS. Then all actors would get it, except where
+    a parent actor has overridden it for child actors:</p>
+<pre>ActorJS.setObject("myFirstResource", {
+            saySomething: function(sayWhat) {
+                alert(sayWhat);
+            }
+    });</pre>
+
+<p><a href="ex3.html" target="_other">Run this example &gt;&gt</a></p>
+
+<h3>Notes</h3>
+<ul class="notes">
+    <li><p>Within each of the child actors, the call to <code>this.getObject</code> will return the first resource
+        named
+        "myFirstResource" found on the way up the actor hierarchy. Therefore, the parent actor (or the ActorJS object)
+        is providing the resource for every actor below it in the hierarchy.</p></li>
+    <li><p>Often you'll want to clean up resources when the parent actor is destroyed - do that within a <a
+            href="#destructors">destructor</a> method.</p></li>
+    <li><p>Don't use resources to do what could be done using actor methods like <code>call</code>,
+        <code>publish</code> and <code>subscribe</code> - that hard-groups actors via their shared resources and misses
+        out on all the modular goodness those methods provide. </p></li>
+</ul>
+
+
+<div class="pageSeparator"></div>
+
+<a name="webWorkers"><h2>4. Actors in Web Workers</h2></a>
+
+<p>Supplying a <code>worker</code> flag causes an actor to be created in it's own <a
+        href="http://www.w3.org/TR/workers/" target="_other">Web Worker</a>:</p>
+
+<pre>
+    ActorJS.addActor({
+        type:"demos/myFirstActor",
+        actorId:"qux",
+        myName: "Qux",
+        worker: true
+    });
+</pre>
+<p>You can then just use that actor in the usual manner, as if it were running locally:</p>
+    <pre>
+    ActorJS.subscribe("qux/saidSomething", function(params) {
+        alert(params.saidWhat);
+    });
+
+    ActorJS.call("qux/saySomething", {
+        message: "Hello, World (from a different thread)!"
+    });
+
+    ActorJS.removeActor({
+        actorId: "qux"
+    });
+
+</pre>
+
+<p><a href="ex3.html" target="_other">Run this example &gt;&gt</a></p>
+
+<h3>Notes</h3>
+<ul class="notes">
+    <li><p>Our actor will be subject to all the restrictions imposed on Web Workers by HTML5,
+        such as having no access to the DOM. Therefore, actors in workers are intended to do computation work
+        such as physics simulations, finding collisions etc.</p></li>
+</ul>
+
+<div class="pageSeparator"></div>
+
+<h2>That's it!</h2>
+
+<p>That's pretty much everything there is to ActorJS + SceneJS so far.</p>
+
+</div>
+<a href="https://github.com/xeolabs/actorjs" target="_blank"><img
+        style="position: absolute; top: 0; right: 0; border: 0;"
+        src="https://s3.amazonaws.com/github/ribbons/forkme_right_green_007200.png"
+        alt="Fork me on GitHub"></a>
+
+<script>
+
+    function addPrettify() {
+        var els = document.querySelectorAll('pre');
+        for (var i = 0, el; el = els[i]; i++) {
+            if (!el.classList.contains('noprettyprint')) {
+                el.classList.add('prettyprint');
+            }
+        }
+        var el = document.createElement('script');
+        el.type = 'text/javascript';
+        el.src = 'libs/prettify.js';
+        el.onload = function () {
+            prettyPrint();
+        };
+        document.body.appendChild(el);
+    }
+
+    jQuery(document).ready(
+            function ($) {
+                addPrettify();
+            });
+
+</script>
+</body>
+</html>

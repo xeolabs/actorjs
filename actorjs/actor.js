@@ -1,0 +1,659 @@
+/**
+ *
+ */
+define([
+    "./map"
+],
+
+    function (Map) {
+
+        /* Pool of reusable IDs for subscription handles
+         */
+        var subscriptionHandles = new Map();
+
+
+        var Actor = function (configs) {
+
+            configs = configs || {};
+
+            this.actorId = configs.actorId || "";
+
+            /* Parent actor
+             */
+            this._parent = configs.parent;
+
+            /*
+             */
+            this._loading = false;
+
+            /*
+             */
+            this._loaded = !!configs.loaded;
+
+            /* Calls buffered while this actor is loading
+             */
+            this._callBuffer = [];
+
+            /* Subscriptions buffered while this actor is loading
+             */
+            this._subsBuffer = [];
+
+
+            this._actorClassLoader = configs.actorClassLoader;
+
+            /* Actor constructors
+             */
+            this._types = {};
+
+            /* Child actors
+             */
+            this._actors = {};
+
+            /* Internally managed actor IDs
+             */
+            this._defaultActorIds = new Map("__");
+
+            /* Holds the most recent publication for each topic
+             */
+            this._publications = {};
+
+            /* Map of subscriptions for each topic.
+             */
+            this._topicSubs = {};
+
+            /* objects - objects of any type, put on the actor for use by child actors
+             */
+            this._objects = {};
+
+            this.inNewThread = configs.inNewThread || configs.newThread;
+        };
+
+
+        /**
+         * Makes asynchronous call to a method on either the actor or a target actor
+         *
+         *
+         * <p>Example - calling the actor's {@link #addActor} method:</p>
+         *
+         * <pre>
+         * #call("addActor",{
+                *      type: "myType",
+                *      id: "myActorInstance",
+                *      someActorConfig: "foo",
+                *      otherActorConfig: "bar"
+                * });
+         * </pre>
+         *
+         * <p>Example - calling the actor's {@link #removeActor} method:</p>
+         *
+         * <pre>
+         * #call("removeActor", {
+                *      id: "myActorInstance"
+                 * });
+         * </pre>
+         *
+         * <p>Example - calling a method on an actor:</p>
+         *
+         * <pre>
+         * #call("myActorInstance.someMethod", {
+                *              someMethodParam: "foo",
+                *              otherMethodParam: "bar"
+                * });
+         * </pre>
+         *
+         * @param {String} method Name of method on either the actor or one of its actors
+         * @param {JSON} params Params for target method
+         * @return {actor} This actor
+         */
+        Actor.prototype.call = function (method, params) {
+
+            params = params || {};
+
+            /*-----------------------------------------------------------------------------------
+             * If ccope not yet finalised by its owner actor, and call comes from someone
+             * other than that actor, then buffer the call until the actor is ready
+             *---------------------------------------------------------------------------------*/
+
+            if (!this._loaded && !this._loading) {
+
+                this._callBuffer.unshift({
+                    method:method,
+                    params:params
+                });
+
+                return this;
+            }
+
+            var slashIdx = method.indexOf("/");
+
+            if (slashIdx > 0) { // Calling child actor
+
+                var actorId = method.substr(0, slashIdx);
+
+                var actor = this._actors[actorId];
+
+                /*----------------------------------------------------------------------------
+                 * Call method on actor
+                 *--------------------------------------------------------------------------*/
+
+                if (actor) {
+
+
+//                    /* Actor in Worker
+//                     */
+//                    if (actor.worker) {
+//
+//                        actor.worker.postMessage({
+//                            type:"call",
+//                            method:method,
+//                            params:params
+//                        });
+//
+//                        return this;
+//                    }
+
+
+                    var subPath = method.substr(slashIdx + 1);
+                    var slashIdx2 = subPath.indexOf("/");
+                    var actorMethod = (slashIdx2 > 0) ? subPath.substr(slashIdx2 + 1) : subPath;
+
+                    var fn = actor[actorMethod];
+
+                    if (!fn) {
+                        throw "method not found on actor '" + actorId + "': " + actorMethod;
+                    }
+
+                    fn.call(actor, params);
+
+                } else if (this._parent) {
+
+                    /* Actor not found - calling a parent actor
+                     */
+                    this._parent.call(method, params);
+
+                } else {
+
+                    throw "actor not found: " + actorId;
+                }
+
+            } else {
+
+                /* No slash in method name - calling a method on this actor
+                 */
+                switch (method) {
+
+                    case "addActor":
+
+                        this.addActor(params);
+                        break;
+
+                    case "removeActor":
+
+                        this.removeActor(params);
+                        break;
+
+                    default:
+
+                        throw "method not found: " + method;
+                }
+            }
+
+            return this;
+        };
+
+
+        /**
+         * Adds an actor to this actor
+         *
+         * @param params
+         * @param {String} params.type Actor type, which maps to a RequireJS module filename
+         * @param {String} params.id ID for actor, unique among actors on this actor - falls back on the value of params.type when omitted
+         * @param {String} params.existsOK When true and actor already exists, the call will be ignored without throwing an exception
+         * @return {*} Proxy actor through which method calls may be made, deferred until the actor exists
+         * @throws exception If actor already exists and existsOK not true
+         */
+        Actor.prototype.addActor = function (params) {
+
+            if (!params) {
+                throw "argument expected: params";
+            }
+
+            var type = params.type;
+
+            if (!type) {
+                throw "param expected: type";
+            }
+
+            var actorId = params.actorId;
+
+            if (!actorId) {
+
+                actorId = this._defaultActorIds.addItem({}); // Automatic actor ID
+
+            } else {
+
+                if (this._actors[actorId]) {
+                    if (params.existsOK) {
+                        return;
+                    }
+
+                    throw "actor already exists: " + actorId;
+                }
+            }
+
+
+            var taskId = actorId + ".create";
+
+            this.publish("task.started", {
+                taskId:taskId,
+                description:"Creating actor '" + actorId + "'"
+            });
+
+            var actor = new Actor({
+                actorId:actorId,
+                parent:this,
+                actorClassLoader:this._actorClassLoader,
+                inNewThread:this.inNewThread
+            });
+
+            this._actors[actorId] = actor;
+
+//            /* Add a Worker actor
+//             */
+//            if (params.worker) {
+//
+//                /*
+//                 */
+//                actor.worker = new Worker("js/app/worker.js");
+//
+//                /* Create the real actor in the Worker
+//                 */
+//                var t = params.actorId; // Don't alter the params
+//                params.actorId = actorId;
+//
+//                actor.worker.postMessage({
+//                    type:"call",
+//                    method:"addActor",
+//                    params:params
+//                });
+//
+//                params.actorId = t;
+//
+//                this._doBufferedCalls(actorId);
+//
+//                /* Distribute remote publications locally
+//                 */
+//                actor.worker.onmessage = function (event) {
+//
+//                    var data = event.data;
+//                    var type = data.type;
+//
+//                    switch (type) {
+//                        case "publish":
+//                            actor.actor.publish(data.topic, data.params);
+//                            break;
+//                    }
+//                };
+//
+//                self.publish("task.finished", {
+//                    taskId:taskId
+//                });
+//
+//                return;
+//            }
+
+            var self = this;
+
+            this._loadActorClass(
+                type,
+                function (clazz) {
+
+                    var cfg = {
+                        actorId:actorId
+                    };
+
+                    for (var key in params) {
+                        if (params.hasOwnProperty(key)) {
+                            cfg[key] = params[key]
+                        }
+                    }
+
+                    try {
+
+                        /* Call type constructor, which is more like an initialisation
+                         * method than a constructor, where it augments the new actor
+                         * instance with type-specific methods etc.                         
+                         */
+                        actor._loading = true; // Don't buffer calls on actor made by its constructor
+
+                        clazz.call(actor, cfg);
+
+                        actor._loading = false;
+
+                    } catch (err) {
+
+                        self.publish("task.failed", {
+                            taskId:taskId,
+                            error:err
+                        });
+
+                        self.publish("error", {
+                            error:err
+                        });
+
+                        return;
+
+                    }
+
+                    actor._doBufferedCalls();
+                    actor._doBufferedSubscriptions();
+
+                    actor._loaded = true;
+
+                    self.publish("task.finished", {
+                        taskId:taskId
+                    });
+                },
+                function (err) {
+
+                    self.publish("task.failed", {
+                        taskId:taskId,
+                        error:err
+                    });
+
+                    self.publish("error", {
+                        error:err
+                    });
+                });
+        };
+
+
+        Actor.prototype._loadActorClass = function (type, ok, error) {
+
+            var clazz = this._types[type];
+
+            if (clazz) {
+                ok(clazz);
+                return;
+            }
+
+            var self = this;
+
+            self._actorClassLoader(type,
+                function (clazz) {
+
+                    self._types[type] = clazz;
+
+                    ok(clazz);
+                },
+                function (err) {
+                    error("failed to add actor type " + type + ": " + err);
+                })
+        };
+
+
+        Actor.prototype._doBufferedCalls = function () {
+            var call;
+            while (this._callBuffer.length > 0) {
+                call = this._callBuffer.pop();
+                this[call.method](call.params);
+            }
+        };
+
+
+        Actor.prototype._doBufferedSubscriptions = function () {
+            var sub;
+            while (this._subsBuffer.length > 0) {
+                sub = this._subsBuffer.pop();
+                this.subscribe(sub.topic, sub.handler);
+            }
+        };
+
+
+        /**
+         * Deletes an actor. Silently ignores if actor does not exist.
+         *
+         * @param {String} actorId ID of target actor
+         */
+        Actor.prototype.removeActor = function (params) {
+
+            var actorId = params.actorId;
+
+            if (!actorId) {
+                throw "param expected: actorId";
+            }
+
+            var actor = self._actors[actorId];
+
+            if (!actor) {
+                return;
+            }
+
+            if (actor._destroy) {
+                actor._destroy();
+            }
+
+            delete this._actors[actorId];
+
+            if (this._defaultActorIds.items[actorId]) {
+                this._defaultActorIds.removeItem(actorId);
+            }
+        };
+
+
+        /**
+         * Subscribe to a topic on this actor and returns a handle to the subscription. Before the handle is
+         * returned, the subscription is immediately notified of the most recent publication on the topic,
+         * if one exists.
+         *
+         * @param {String} topic Topic name - "*" to subscribe to all topics on this actor
+         * @param {Function} handler Topic handler
+         * @return {String} Subscription handle
+         */
+        Actor.prototype.subscribe = function (topic, handler) {
+
+            var onChild = topic.indexOf("/") > 0;
+
+            var handle = subscriptionHandles.addItem({ // Info we'll use when unsubscribing
+                onChild:onChild,
+                topic:topic
+            });
+
+            this._subscribe(topic, handler, handle, onChild);
+
+            return handle;
+        };
+
+        Actor.prototype._subscribe = function (topic, handler, handle, onChild) {
+
+            var slashIdx = topic.indexOf("/");
+
+            if (slashIdx > 0) { // Path down into child actors
+
+                var actorId = topic.substr(0, slashIdx);
+
+                var actor = this._actors[actorId];
+
+                /* Buffer subscription if actor not yet existing
+                 */
+                if (!actor) {
+                    this._subsBuffer.unshift({
+                        topic:topic,
+                        handler:handler
+                    });
+
+                    return;
+                }
+
+                actor._subscribe(topic.substr(slashIdx + 1), handler, handle, onChild);
+
+                return;
+            }
+
+            var subs = this._topicSubs[topic];
+
+            if (!subs) {
+                subs = this._topicSubs[topic] = {           // Subscriptions for this event topic
+                    handlers:{}, // Handler function for each subscriber
+                    numSubs:0                      // Count of subscribers for the event topic
+                };
+            }
+
+            subs.handlers[handle] = handler;
+
+            subs.numSubs++;                     // Bump count of subscribers to the event
+
+            var publication = this._publications[topic];
+
+            if (publication) {
+                handler(publication);
+            }
+
+            if (!onChild) {
+                for (var actor = this; actor; actor = actor._parent) {
+                    actor._subscribe(topic.substr(slashIdx + 1), handler, handle, onChild);
+                }
+            }
+        };
+
+
+        /**
+         * Unsubscribe to an event on this actor
+         * @param {String} handle Subscription handle
+         */
+        Actor.prototype.unsubscribe = function (handle) {
+
+
+            var topic = subscriptionHandles.items[handle];
+
+            if (!topic) { // No subscription exists
+                return;
+            }
+
+            subscriptionHandles.removeItem(handle);
+
+            var subs = this._topicSubs[topic];
+
+            if (!subs) { // No subscriptions
+                return;
+            }
+
+            delete subs.handlers[handle];
+
+            subs.numSubs--;
+        };
+
+
+        /**
+         * Publishes a topic on the actor
+         *
+         * @param {String} method Name of topic
+         * @param {Object} params Optional params for publication.
+         */
+        Actor.prototype.publish = function (topic, params) {
+
+            params = params || {};
+
+            this._publications[topic] = params;
+
+            var subs = this._topicSubs[topic];
+
+            if (subs) {
+
+                if (subs.numSubs > 0) {             // Don't handle if no subscribers
+
+                    var handlers = subs.handlers;
+
+                    for (var handle in handlers) {
+                        if (handlers.hasOwnProperty(handle)) {
+
+                            handlers[handle](params, topic);
+                        }
+                    }
+                }
+            }
+
+            /* Notify wildcard subscriptions
+             */
+
+            subs = this._topicSubs["*"];
+
+            if (subs) {
+
+                if (subs.numSubs > 0) {             // Don't handle if no subscribers
+
+                    var handlers = subs.handlers;
+
+                    for (var handle in handlers) {
+                        if (handlers.hasOwnProperty(handle)) {
+
+                            handlers[handle](params, topic);
+                        }
+                    }
+                }
+            }
+        };
+
+        /**
+         * Adds a object for use by child actors
+         * @param {String} objectId
+         * @param {Object} object
+         */
+        Actor.prototype.setObject = function (objectId, object) {
+
+            if (this._objects[objectId]) {
+                throw "object already exists: " + objectId;
+            }
+
+            if (object) {
+                this._objects[objectId] = object;
+
+            } else {
+                delete this._objects[objectId];
+            }
+        };
+
+
+        /**
+         * Gets a object
+         * @param {String} objectId
+         */
+        Actor.prototype.getObject = function (objectId) {
+
+            var object;
+
+            for (var actor = this; actor && !object; actor = actor._parent) {
+                object = actor._objects[objectId];
+            }
+
+            return object;
+        };
+
+
+        /**
+         * Deletes actors, subscriptions and child actors
+         */
+        Actor.prototype.clear = function () {
+
+            this._types = {};
+
+            for (var actorId in this._actors) {
+                if (this._actors.hasOwnProperty(actorId)) {
+                    this.removeActor({ actorId:actorId }); // Calls actor destructors
+                }
+            }
+
+            this._topicSubs = {};
+
+            subscriptionHandles.clear();
+
+            for (var actorId in this._actors) {
+                if (this._actors.hasOwnProperty(actorId)) {
+                    this.removeActor({ actorId:actorId });
+                }
+            }
+        };
+
+        return Actor;
+
+    });
