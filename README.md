@@ -7,4 +7,4 @@ With ActorJS, you define actor types as RequireJS modules, then fire JSON-RPC ca
 subscribe to their publications, kill them, and so forth. You can even distribute your actors across Web Workers, giving you
 the capability to offload CPU-intensive processes onto separate threads.
 
-Find documentation and examples on the [project pages](http://actorjs.org).
+Find documentation and examples at [actorjs.org](http://actorjs.org).
