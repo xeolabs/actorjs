@@ -20,18 +20,18 @@
 
 <div id="container">
 
-<img style="float: right; padding-top:35px;" src="images/a-xeolabs-project.png">
+<a href="http://xeolabs.com"><img style="float: right; padding-top:35px;" src="images/a-xeolabs-project.png"></a>
 
 <h1>ActorJS</h1>
 
 <div style="width:100%; height:60px; padding-top:20px;">
-<a href="https://github.com/xeolabs/actorjs/zipball/master">
-    <img style="float: left;" src="images/download-zip.jpg">
-</a>
+    <a href="https://github.com/xeolabs/actorjs/zipball/master">
+        <img style="float: left;" src="images/download-zip.jpg">
+    </a>
 
-<a href="https://github.com/xeolabs/actorjs/tarball/master">
-    <img style="float: left;margin-left:20px;" src="images/download-tar.jpg">
-</a>
+    <a href="https://github.com/xeolabs/actorjs/tarball/master">
+        <img style="float: left;margin-left:20px;" src="images/download-tar.jpg">
+    </a>
 </div>
 
 <br>
@@ -57,16 +57,16 @@
     ActorJS.addActor({
         type: "objects/prims/teapot",
         actorId: "myTeapot"
-    })
+    });
 
-    .addActor({
+    ActorJS.addActor({
         type: "scene/camera",
         actorId: "myCamera"
-    })
+    });
 
-    .call("myTeapot/startSpinning")
+    ActorJS.call("myTeapot/startSpinning");
 
-    .call("myCamera/setEye", {
+    ActorJS.call("myCamera/setEye", {
         x: -30,
         y: 0,
         z: 50
@@ -80,7 +80,7 @@
 
 
 <p>I created ActorJS for building apps on <a
-        href="http://scenejs.org">SceneJS</a>. Take a look at <a href="">SceneJS Grid</a> to see that
+        href="http://scenejs.org">SceneJS</a>. Take a look at <a href="https://github.com/xeolabs/scenejs-nexus">SceneJS Nexus</a> to see that
     happening, or keep reading to learn the essentials of ActorJS and how to use it with your choice of alternative
     libraries.</p>
 
@@ -380,10 +380,6 @@
 </ul>
 
 <div class="pageSeparator"></div>
-
-<h2>That's it!</h2>
-
-<p>That's pretty much everything there is to ActorJS + SceneJS so far.</p>
 
 </div>
 <a href="https://github.com/xeolabs/actorjs" target="_blank"><img
