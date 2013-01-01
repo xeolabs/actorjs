@@ -110,8 +110,7 @@ define([
             params = params || {};
 
             /*-----------------------------------------------------------------------------------
-             * If ccope not yet finalised by its owner actor, and call comes from someone
-             * other than that actor, then buffer the call until the actor is ready
+             * If actor not yet loaded then buffer the call until the actor is ready
              *---------------------------------------------------------------------------------*/
 
             if (!this._loaded && !this._loading) {
@@ -157,45 +156,36 @@ define([
                     var slashIdx2 = subPath.indexOf("/");
                     var actorMethod = (slashIdx2 > 0) ? subPath.substr(slashIdx2 + 1) : subPath;
 
-                    var fn = actor[actorMethod];
-
-                    if (!fn) {
-                        throw "method not found on actor '" + actorId + "': " + actorMethod;
-                    }
-
-                    fn.call(actor, params);
-
-                } else if (this._parent) {
-
-                    /* Actor not found - calling a parent actor
-                     */
-                    this._parent.call(method, params);
+                    actor.call(actorMethod, params);
 
                 } else {
 
-                    throw "actor not found: " + actorId;
+                    if (this._parent) {
+
+                        /* Actor not found - calling a parent actor
+                         */
+                        this._parent.call(method, params);
+
+                    } else {
+
+                        throw "method not found: " + method;
+                    }
                 }
 
             } else {
 
+
                 /* No slash in method name - calling a method on this actor
                  */
-                switch (method) {
 
-                    case "addActor":
 
-                        this.addActor(params);
-                        break;
+                var fn = this[method];
 
-                    case "removeActor":
-
-                        this.removeActor(params);
-                        break;
-
-                    default:
-
-                        throw "method not found: " + method;
+                if (!fn) {
+                    throw "method not found on actor '" + actorId + "': " + actorMethod;
                 }
+
+                fn.call(this, params);
             }
 
             return this;
@@ -405,7 +395,7 @@ define([
             var sub;
             while (this._subsBuffer.length > 0) {
                 sub = this._subsBuffer.pop();
-                this.subscribe(sub.topic, sub.handler);
+                this._subscribe(sub.topic, sub.handler, sub.handle);
             }
         };
 
@@ -452,23 +442,22 @@ define([
          */
         Actor.prototype.subscribe = function (topic, handler) {
 
-            var onChild = topic.indexOf("/") > 0;
-
-            var handle = subscriptionHandles.addItem({ // Info we'll use when unsubscribing
-                onChild:onChild,
+            var handle = subscriptionHandles.addItem({
                 topic:topic
             });
 
-            this._subscribe(topic, handler, handle, onChild);
+            for (var actor = this; actor; actor = actor._parent) {
+                actor._subscribe(topic, handler, handle);
+            }
 
             return handle;
         };
 
-        Actor.prototype._subscribe = function (topic, handler, handle, onChild) {
+        Actor.prototype._subscribe = function (topic, handler, handle) {
 
             var slashIdx = topic.indexOf("/");
 
-            if (slashIdx > 0) { // Path down into child actors
+            if (slashIdx > 0) {
 
                 var actorId = topic.substr(0, slashIdx);
 
@@ -477,43 +466,44 @@ define([
                 /* Buffer subscription if actor not yet existing
                  */
                 if (!actor) {
+
                     this._subsBuffer.unshift({
                         topic:topic,
-                        handler:handler
+                        handler:handler,
+                        handle:handle
                     });
 
-                    return;
+                } else {
+
+                    actor._subscribe(topic.substr(slashIdx + 1), handler, handle);
                 }
 
-                actor._subscribe(topic.substr(slashIdx + 1), handler, handle, onChild);
+            } else {
 
-                return;
-            }
+                var subs = this._topicSubs[topic];
 
-            var subs = this._topicSubs[topic];
+                if (!subs) {
 
-            if (!subs) {
-                subs = this._topicSubs[topic] = {           // Subscriptions for this event topic
-                    handlers:{}, // Handler function for each subscriber
-                    numSubs:0                      // Count of subscribers for the event topic
-                };
-            }
+                    subs = {           // Subscriptions for this event topic
+                        handlers:{}, // Handler function for each subscriber
+                        numSubs:0                      // Count of subscribers for the event topic
+                    };
 
-            subs.handlers[handle] = handler;
+                    this._topicSubs[topic] = subs;
+                }
 
-            subs.numSubs++;                     // Bump count of subscribers to the event
+                subs.handlers[handle] = handler;
 
-            var publication = this._publications[topic];
+                subs.numSubs++;                     // Bump count of subscribers to the event
 
-            if (publication) {
-                handler(publication);
-            }
+                var publication = this._publications[topic];
 
-            if (!onChild) {
-                for (var actor = this; actor; actor = actor._parent) {
-                    actor._subscribe(topic.substr(slashIdx + 1), handler, handle, onChild);
+                if (publication) {
+                    handler(publication);
                 }
             }
+
+            return handle;
         };
 
 
@@ -523,24 +513,50 @@ define([
          */
         Actor.prototype.unsubscribe = function (handle) {
 
+            var sub = subscriptionHandles.items[handle];
 
-            var topic = subscriptionHandles.items[handle];
+            if (sub) {
 
-            if (!topic) { // No subscription exists
-                return;
+                subscriptionHandles.removeItem(handle);
+
+                var topic = sub.topic;
+
+                this._unsubscribe(topic, handle);
             }
 
-            subscriptionHandles.removeItem(handle);
 
-            var subs = this._topicSubs[topic];
-
-            if (!subs) { // No subscriptions
-                return;
+            for (var actor = this; actor; actor = actor._parent) {
+                actor._unsubscribe(topic, handle);
             }
+        };
 
-            delete subs.handlers[handle];
 
-            subs.numSubs--;
+        Actor.prototype._unsubscribe = function (topic, handle) {
+
+            var slashIdx = topic.indexOf("/");
+
+            if (slashIdx > 0) {
+
+                var actorId = topic.substr(0, slashIdx);
+
+                var actor = this._actors[actorId];
+
+                if (actor) {
+
+                    actor._unsubscribe(topic.substr(slashIdx + 1), handle);
+                }
+
+            } else {
+
+                var subs = this._topicSubs[topic];
+
+                if (subs) {
+
+                    delete subs.handlers[handle];
+
+                    subs.numSubs--;
+                }
+            }
         };
 
 

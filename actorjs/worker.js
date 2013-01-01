@@ -1,6 +1,6 @@
 /*
 
- Web Worker which wraps a ActorJS
+ Web Worker which wraps an ActorJS instance
 
  Via the Worker, the ActorJS can be called, subscribed and unsubscribed
 
@@ -8,24 +8,22 @@
 importScripts('../lib/require.js');
 
 requirejs.config({
-    baseUrl:".",
-    paths:{
-        app:"../app"
-    }
+    baseUrl:"."
 });
 
+/* Load ActorJS
+ */
 require([
-    'app/actorjs'
+    'actorjs/actorjs'
 ],
     function () {
 
         var self = this;
 
-        /* Tell ActorJS where to find RequireJS modules for actor classes
+        /* Tell ActorJS where to find actor types
          */
         ActorJS.configure({
-            actorClassPath:"../../content/actors/",
-            inWorker:true
+            actorClassPath:"actors/"
         });
 
         /* Handle message from owner thread
