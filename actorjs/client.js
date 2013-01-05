@@ -1,5 +1,5 @@
 /**
- * Client for connection with remote Human using cross-window messaging
+ * Client for connection with remote ActorJS using cross-window messaging
  * @param cfg
  * @constructor
  */
@@ -19,7 +19,7 @@ var ActorJSClient = function (cfg) {
         throw "element is not an iframe: '" + iframe + "'";
     }
 
-    var subHandles = new HumanAPI._Map(); // Subscription handle pool
+    var subHandles = new Map(); // Subscription handle pool
 
     var subs = {}; // Subscribers
 
