@@ -2,21 +2,23 @@
 
  Web Worker which wraps an ActorJS instance
 
- Via the Worker, the ActorJS can be called, subscribed and unsubscribed
-
  */
-importScripts('../lib/require.js');
+importScripts('../libs/require.js');
 
+
+/* Configure RequireJS
+ */
 requirejs.config({
     baseUrl:"."
 });
 
-/* Load ActorJS
- */
+
 require([
-    'actorjs/actorjs'
+    './actorjs.js'
 ],
     function () {
+
+        var handleMap = {};
 
         var self = this;
 
@@ -26,45 +28,40 @@ require([
             actorClassPath:"actors/"
         });
 
-        /* Handle message from owner thread
-         */
+
         self.onmessage = function (event) {
 
-            var data = event.data;
+            var call = event.data;
 
-            switch (data.type) {
-
-                /* Method call
-                 */
+            switch (call.action) {
 
                 case "call":
 
-                    var method = data.method;
-                    var params = data.params;
+                    ActorJS[call.method].call(self, call.params);
 
-                    ActorJS.call(method, params);
+                    break;
 
-                    if (method == "addActor") {
+                case "publish":
 
-                        /* Adding an actor
-                         */
-                        if (params.actorId) {
+                    ActorJS.publish(call.topic, call.params);
 
-                            var actorId = params.actorId;
+                    break;
 
-                            /* Notify owner thread of all publications by the actor
-                             */
-                            ActorJS.subscribe(actorId + "/*",
-                                function (params, topic) {
-                                    self.postMessage({
-                                        type:"publish",
-                                        actorId:actorId,
-                                        topic:topic,
-                                        params:params
-                                    });
-                                });
-                        }
-                    }
+                case "subscribe":
+
+                    handleMap[call.handle] = ActorJS.subscribe(
+                        call.topic,
+                        function (pub) {
+                            self.postMessage({ published:pub, topic:call.topic, handle:call.handle });
+                        });
+
+                    break;
+
+                case "unsubscribe":
+
+                    ActorJS.unsubscribe(handleMap[call.handle]);
+
+                    delete handleMap[call.handle];
 
                     break;
             }

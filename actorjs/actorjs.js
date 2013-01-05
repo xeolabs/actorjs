@@ -57,9 +57,5 @@ define([
             this.getObject = function (resourceId) {
                 return actor.getObject(resourceId);
             };
-
-            this.removeResource = function (resourceId) {
-                return actor.removeResource(resourceId);
-            };
         };
     });
