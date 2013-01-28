@@ -30,7 +30,7 @@ ActorJS.call("myCamera/setEye", {
 ```
 
 ## Documentation
-Take a look at our [wiki] for all the things.
+Take a look at our [https://github.com/xeolabs/actorjs/wiki] for documentation and examples.
 
 ## License
 ActorJS is licensed under both the [GPL](https://github.com/xeolabs/actorjs/blob/master/licenses/GPL_LICENSE.txt)
