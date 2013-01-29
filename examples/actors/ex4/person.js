@@ -4,10 +4,8 @@ define(function () {
 
         var myName = cfg.myName;
 
-        var myResource = this.getObject("myFirstResource");
-
         this.saySomething = function (params) {
-            myResource.saySomething(myName + " says: " + params.message );
+            this.publish("saidSomething", { message:myName + " says: " + params.message });
         };
     };
 });

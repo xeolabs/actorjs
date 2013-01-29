@@ -7,13 +7,15 @@ define(function () {
         this.addActor({
             type:"ex4/person",
             actorId:"foo",
-            myName:"Foo"
+            myName:"Foo",
+            worker: true
         });
 
         this.addActor({
             type:"ex4/person",
             actorId:"bar",
-            myName:"Bar"
+            myName:"Bar",
+            worker: true
         });
 
         this.saySomething = function (params) {
