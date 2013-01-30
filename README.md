@@ -19,35 +19,40 @@ require([
     ],
     function (world) {
 
-        /* Tell our ActorJS instance where to find the AMD modules that define our actor types
+        /* Tell our ActorJS instance where to find the AMD modules
+         * that define our actor types
          */
         world.configure({
             actorClassPath:"actors/"
         });
 
-        /* Add a root actor that provides a SceneJS scene graph to child actors, complete with lookat node and lights.
+        /* Add a root actor that provides a SceneJS scene graph to child
+         * actors, complete with lookat node and lights.
          */
         world.call("addActor", {
             type: "scene",
             actorId: "myScene"
         });
 
-        /* Add a child teapot actor to the root actor. This will create a teapot in the scene graph.
+        /* Add a child teapot actor to the root actor. This will create
+         * a teapot in the scene graph.
          */
         world.call("myScene/addActor", {
             type: "objects/teapot",
             actorId: "myTeapot"
         });
 
-        /* Add a child actor to the root actor. This will control the scene graph's lookat node.
+        /* Add a child actor to the root actor. This will control the
+         * scene graph's lookat node.
          */
         world.call("myScene/addActor", {
             type: "scene/camera",
             actorId: "myCamera"
         });
 
-        /* Call a method on the teapot actor to start it spinning. See how we specify a path that drills
-         * down through the actor hierarchy to the method on the teapot actor.
+        /* Call a method on the teapot actor to start it spinning.
+         * See how we specify a path that drills down through the
+         * actor hierarchy to the method on the teapot actor.
          */
         world.call("myScene/myTeapot/startSpinning");
 
@@ -59,8 +64,10 @@ require([
             z: 50
         });
 
-        /* Subscribe to the "update" topic that is published to by the camera actor whenever its position changes.
-         * See how we specify a path down through the hierarchy to the camera actor's topic.
+        /* Subscribe to the "update" topic that is published to by
+         * the camera actor whenever its position changes.
+         * See how we specify a path down through the hierarchy
+         * to the camera actor's topic.
          */
         world.subscribe("myScene/myCamera/update",
             function(update) {
