@@ -7,8 +7,9 @@ subscribe to their publications, kill them, and so forth.
 
 ## Concept
 ActorJS was originally created for building APIs on top of [SceneJS](http://scenejs.org), through which you could quickly throw together 3D
- worlds and drive all their bits and pieces. See if you can intuit the general concept of ActorJS from this example:
+ worlds and drive all their bits and pieces.
 
+Without going into too much detail, see if you can intuit the general concept of ActorJS from this example:
 
 ```javascript
 
@@ -17,7 +18,7 @@ ActorJS was originally created for building APIs on top of [SceneJS](http://scen
 require([
     '../js/actorjs'
     ],
-    function (world) {
+    function (world) { // We'll call the instance "world"
 
         /* Tell our ActorJS instance where to find the AMD modules
          * that define our actor types
@@ -26,7 +27,7 @@ require([
             actorClassPath:"actors/"
         });
 
-        /* Add a root actor that provides a SceneJS scene graph to child
+        /* Add a root actor that provides a SceneJS scene graph to its child
          * actors, complete with lookat node and lights.
          */
         world.call("addActor", {
@@ -86,8 +87,6 @@ Coolnesses to note here:
  * We're instantiating actor types that are defined in AMD modules
  * We call methods on those instances asynchronously, some of which are built in to ActorJS, like 'addActor'
  * We can subscribe to publications that the actors make
- * It all happens via RPC. Using WebSockets, ActorJS can distribute our actors across Web Workers, and via the Web Messaging API,
- can run actors in different browser windows.
  * Calls and subscriptions can be made immediately (i.e. asynchronously) because ActorJS buffers those until the actor exists.
 
 Major plug-and-play going on here - all doable across a network.
