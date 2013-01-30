@@ -6,42 +6,70 @@ With ActorJS, you define actor types as RequireJS modules, then fire JSON-RPC ca
 subscribe to their publications, kill them, and so forth.
 
 ## Concept
-ActorJS was originally created for building APIs on top of SceneJS, through which you could quickly throw together 3D
- worlds and drive all their bits and pieces, like this:
+ActorJS was originally created for building APIs on top of [SceneJS](http://scenejs.org), through which you could quickly throw together 3D
+ worlds and drive all their bits and pieces. See if you can intuit the general concept of ActorJS from this example:
 
 
 ```javascript
+
+/* Get an ActorJS instance to manage our 3D world
+ */
 require([
     '../js/actorjs'
     ],
-    function (actorjs) {
+    function (world) {
 
-        actorjs.call("addActor", {
+        /* Tell our ActorJS instance where to find the AMD modules that define our actor types
+         */
+        world.configure({
+            actorClassPath:"actors/"
+        });
+
+        /* Add a root actor that provides a SceneJS scene graph to child actors, complete with lookat node and lights.
+         */
+        world.call("addActor", {
             type: "scene",
             actorId: "myScene"
         });
 
-        actorjs.call("myScene/addActor", {
+        /* Add a child teapot actor to the root actor. This will create a teapot in the scene graph.
+         */
+        world.call("myScene/addActor", {
             type: "objects/teapot",
             actorId: "myTeapot"
         });
 
-        actorjs.call("myScene/addActor", {
+        /* Add a child actor to the root actor. This will control the scene graph's lookat node.
+         */
+        world.call("myScene/addActor", {
             type: "scene/camera",
             actorId: "myCamera"
         });
 
-        actorjs.call("myScene/myTeapot/startSpinning");
+        /* Call a method on the teapot actor to start it spinning. See how we specify a path that drills
+         * down through the actor hierarchy to the method on the teapot actor.
+         */
+        world.call("myScene/myTeapot/startSpinning");
 
-        actorjs.call("myScene/myCamera/setEye", {
+        /* Call a method on the camera actor to set the eye position
+         */
+        world.call("myScene/myCamera/setEye", {
             x: -30,
             y: 0,
             z: 50
         });
 
-        actorjs.subscribe("myScene/myCamera/update",
+        /* Subscribe to the "update" topic that is published to by the camera actor whenever its position changes.
+         * See how we specify a path down through the hierarchy to the camera actor's topic.
+         */
+        world.subscribe("myScene/myCamera/update",
             function(update) {
-                alert("Camera updated: " + JSON.stringify(update));
+
+                var eye = update.eye;
+                var look = update.look;
+                var up = update.up;
+
+                //..
             });
     });
 
