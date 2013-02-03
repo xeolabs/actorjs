@@ -1,3 +1,5 @@
+/* An actor which
+ */
 define(function () {
 
     return function (cfg) {

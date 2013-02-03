@@ -15,7 +15,7 @@ define(function () {
             type:"ex4/person",
             actorId:"bar",
             myName:"Bar",
-            worker: true
+            worker: false
         });
 
         this.saySomething = function (params) {

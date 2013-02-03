@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/html" xmlns="http://www.w3.org/1999/html">
+<head>
+    <title>ActorJS Example 1</title>
+
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+
+    <script src="examples/libs/jquery-lib.1.7.1.min.js"></script>
+    <script src="lib/require.js"></script>
+</head>
+<body style="padding: 20px;">
+
+<h1>ActorJS Example 1: Hello, World!</h1>
+
+<p>[ <a href="https://github.com/xeolabs/actorjs/wiki/Hello,-World!">Wiki page on this example</a> ]</p>
+
+<h2><a href="" id="saySomething">Say something!</a></h2>
+
+<script>
+
+    //    jQuery(document).ready(
+    //            function ($) {
+
+    /* Configure RequireJS
+     */
+    requirejs.config({
+        baseUrl:"."
+    });
+
+    /* Create an ActorJS instance
+     */
+    require([
+        'lib/actorjs/actorjs'
+    ],
+            function (actorjs) {
+
+                /* Tell ActorJS where to find actor types
+                 */
+                actorjs.configure({
+                    actorClassPath:"actors/"
+                });
+
+                /* Add an instance of our first example actor type
+                 */
+                actorjs.call("addActor", {
+                    type:"ex1/person",
+                    actorId:"foo",
+                    myName:"Foo"
+                });
+
+                /* Subscribe to the message the actor will publish
+                 */
+                actorjs.subscribe("foo/saidSomething",
+                        function (params) {
+                            alert(params.message);
+                        });
+
+                /* When we click the button, call the actor's 'saySomething' method, which
+                 * publishes that message back at us
+                 */
+                $("#saySomething").click(
+                        function () {
+                            actorjs.call("foo/saySomething", {
+                                message:"Hello, World!"
+                            });
+                        });
+            });
+    //            });
+
+</script>
+</body>
+</html>

@@ -1,17 +1,17 @@
 <!DOCTYPE html>
 <html lang="en" xmlns="http://www.w3.org/1999/html" xmlns="http://www.w3.org/1999/html">
 <head>
-    <title>ActorJS Example 3: Injecting Resources for Actors</title>
+    <title>ActorJS Example 2: Actor Hierarchies</title>
 
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
 
-    <script src="libs/jquery-lib.1.7.1.min.js"></script>
-    <script src="libs/require.js"></script>
+    <script src="examples/libs/jquery-lib.1.7.1.min.js"></script>
+    <script src="lib/require.js"></script>
 </head>
 <body style="padding: 20px;">
 
-<h1>ActorJS Example 3: Injecting Resources for Actors</h1>
+<h1>ActorJS Example 2: Actor Hierarchies</h1>
 
 <p>[ <a href="https://github.com/xeolabs/actorjs/wiki/Hello,-World!">Wiki page on this example</a> ]</p>
 
@@ -22,44 +22,53 @@
     jQuery(document).ready(
             function ($) {
 
+                /* Configure RequireJS
+                 */
                 requirejs.config({
                     baseUrl:"."
                 });
 
-                /* Load ActorJS
+                /* Create an ActorJS instance
                  */
                 require([
-                    '../js/actorjs'
+                    'lib/actorjs/actorjs'
                 ],
-                        function () {
+                        function (actorjs) {
 
                             /* Tell ActorJS where to find actor types
                              */
-                            ActorJS.configure({
+                            actorjs.configure({
                                 actorClassPath:"actors/"
                             });
 
                             /* Add an instance of our group actor
                              */
-                            ActorJS.call("addActor", { type:"ex3/group", actorId:"group", myName:"Group"});
+                            actorjs.call("addActor", {
+                                type:"ex2/group",
+                                actorId:"group",
+                                myName:"Group"
+                            });
 
                             /* Subscribe to the message the group actor will publish on behalf of either child
                              */
-                            ActorJS.subscribe("group/saidSomething", function (params) {
-                                alert("Actor group said " + params.message);
-                            });
+                            actorjs.subscribe("group/saidSomething",
+                                    function (params) {
+                                        alert(params.message);
+                                    });
 
                             /* Subscribe to the message the group actor's first child actor will publish
                              */
-                            ActorJS.subscribe("group/foo/saidSomething", function (params) {
-                                alert("Actor group/foo said " + params.message);
-                            });
+                            actorjs.subscribe("group/foo/saidSomething",
+                                    function (params) {
+                                        alert(params.message);
+                                    });
 
                             /* Subscribe to the message its group actor's second child actor will publish
                              */
-                            ActorJS.subscribe("group/bar/saidSomething", function (params) {
-                                alert("Actor group/bar said " + params.message);
-                            });
+                            actorjs.subscribe("group/bar/saidSomething",
+                                    function (params) {
+                                        alert(params.message);
+                                    });
 
 
                             /* When we click the button, call the group actor's 'saySomething' method, which
@@ -67,7 +76,9 @@
                              */
                             $("#saySomething").click(
                                     function () {
-                                        ActorJS.call("group/saySomething", { message:"Hello, World!"  });
+                                        actorjs.call("group/saySomething", {
+                                            message:"Hello, World!"
+                                        });
                                     });
                         });
 
