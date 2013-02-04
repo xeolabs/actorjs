@@ -6,12 +6,13 @@ ActorJS is a JavaScript framework/boilerplate that structures apps as actors tha
 With ActorJS, you define actor types as RequireJS modules, then send JSON-RPC calls to instantiate them, call their methods,
 subscribe to their publications, delete them, and so forth.
 
-ActorJS is used as the backbone of [xeoEngine](https://github.com/xeolabs/xeoEngine), another xeoLabs project that lets us
-assemble WebGL-based 3D worlds from actor libraries and drive them over a network.
+ActorJS is used as the backbone of [xeoEngine](https://github.com/xeolabs/xeoEngine), a WebGL-based engine from xeoLabs which lets us
+assemble 3D worlds from actor libraries and drive them over a network.
 
 ## Hello, World!
 
-Check out this super basic example. In file [actors/ex1/person.js](actors/ex1/person.js), we'll define a simple actor
+Check out this super basic example.
+In file [actors/ex1/person.js](actors/ex1/person.js), we'll define a simple actor
 which will publish whatever we tell it to say:
 
 ```javascript
