@@ -1,71 +1,75 @@
 <!DOCTYPE html>
 <html lang="en" xmlns="http://www.w3.org/1999/html" xmlns="http://www.w3.org/1999/html">
 <head>
-    <title>ActorJS Example 4: Actors in Web Workers</title>
+    <title>ActorJS Example 4: ActorJS in an IFRAME</title>
 
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
 
-    <script src="lib/require.js"></script>
+    <script src="lib/actorjs/client.js"></script>
+
+    <style>
+        body {
+            background-color: #000000;
+            margin: 0;
+            overflow: hidden;
+            height: 100%;
+        }
+
+        iframe {
+            width: 100%;
+            height: 100%; /*position: fixed;*/
+            margin: 0;
+            padding: 0;
+        }
+    </style>
+
 </head>
 <body style="padding: 20px;">
 
-<h1>ActorJS Example 4: Actors in Web Workers</h1>
+<h1>ActorJS Example 4: ActorJS in an IFRAME</h1>
 
-<p>[ <a href="https://github.com/xeolabs/actorjs/wiki/Actors-in-Web-Workers">Wiki page on this example</a> ]</p>
+<p>In this example we're running ActorJS in an IFRAME, while talking to it via the HTML5 Cross-Domain Messing API</p>
+
+<iframe id="myIFrame" src="ex4-server.html"></iframe>
 
 <h2><a href="" id="saySomething">Say something!</a></h2>
 
 <script>
-    requirejs.config({
-        baseUrl:"../js"
+
+    /* Create client for the ActorJS server in the iframe
+     */
+    var actorjs = new ActorJSClient({
+        iframe:"myIFrame"
     });
 
-    /* Create an ActorJS instance
+    /* Add an instance of our first example actor type
      */
-    require([
-        'lib/actorjs/actorjs'
-    ],
-            function (actorjs) {
+    actorjs.call("addActor", {
+        type:"ex1/person",
+        actorId:"foo",
+        myName:"Foo"
+    });
 
-                /* Tell ActorJS where to find actor types
-                 */
-                actorjs.configure({
-                    actorClassPath:"../examples/actors/"
-                });
-
-                /* Add an instance of our group actor. It's the same as the group actor of ex2,
-                 * but creates each of its child actors in a separate Web Worker.
-                 */
-                actorjs.call("addActor", { type:"ex4/group", actorId:"group", myName:"Group"});
-
-                /* Subscribe to the message the group actor will publish on behalf of either child
-                 */
-                actorjs.subscribe("group/saidSomething", function (params) {
-                    alert("Actor group said " + params.message);
-                });
-
-                /* Subscribe to the message the group actor's first child actor will publish
-                 */
-                actorjs.subscribe("group/foo/saidSomething", function (params) {
-                    alert("Actor group/foo (running in Web Worker) said " + params.message);
-                });
-
-                /* Subscribe to the message its group actor's second child actor will publish
-                 */
-                actorjs.subscribe("group/bar/saidSomething", function (params) {
-                    alert("Actor group/bar (running in Web Worker) said " + params.message);
-                });
-
-                /* When we click the button, call the group actor's 'saySomething' method, which
-                 * calls that method in turn on both of its child actors
-                 */
-                var myAnchor = document.getElementById("saySomething");
-
-                myAnchor.onclick = function () {
-                    actorjs.call("group/saySomething", { message:"Hello, World!"  });
-                };
+    /* Subscribe to the message the actor will publish
+     */
+    actorjs.subscribe("foo/saidSomething",
+            function (params) {
+                alert(params.message);
             });
+
+    /* When we click the button, call the actor's 'saySomething' method, which
+     * publishes that message back at us
+     */
+    var myAnchor = document.getElementById("saySomething");
+
+    myAnchor.onclick = function () {
+        actorjs.call("foo/saySomething", {
+            message:"Hello, World!"
+        });
+        return false;
+    };
+
 </script>
 </body>
 </html>

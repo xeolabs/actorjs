@@ -90,7 +90,7 @@ Coolnesses to note in this example:
  * [Drive ActorJS in an IFRAME using Cross-Domain Messaging](http://xeolabs.github.com/actorjs/ex4.html)
  * [Put actors in Web Workers to multi-thread your app](http://xeolabs.github.com/actorjs/ex5.html)
 
-## Documentation and Examples
+## Documentation
  * Peruse the [wiki](https://github.com/xeolabs/actorjs/wiki) for documentation and examples
  * Browse the [xeoEngine](https://github.com/xeolabs/xeoEngine) source code for an example of what you can build
 
