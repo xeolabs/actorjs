@@ -85,10 +85,10 @@ Coolnesses to note in this example:
 
 ### What else can I do?
 
- * Assemble actors into hierarchies
- * Inject resource objects into your actors
- * Drive ActorJS in an IFRAME using Cross-Domain Messaging
- * Put actors in Web Workers to multi-thread your app
+ * [Assemble actors into hierarchies](http://xeolabs.github.com/actorjs/ex2.html)
+ * [Inject resource objects into your actors](http://xeolabs.github.com/actorjs/ex3.html)
+ * [Drive ActorJS in an IFRAME using Cross-Domain Messaging](http://xeolabs.github.com/actorjs/ex4.html)
+ * [Put actors in Web Workers to multi-thread your app](http://xeolabs.github.com/actorjs/ex5.html)
 
 ## Documentation and Examples
  * Peruse the [wiki](https://github.com/xeolabs/actorjs/wiki) for documentation and examples
