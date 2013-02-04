@@ -7,7 +7,7 @@ With ActorJS, you define actor types as RequireJS modules, then send JSON-RPC ca
 subscribe to their publications, delete them, and so forth.
 
 ActorJS is used as the backbone of [xeoEngine](https://github.com/xeolabs/xeoEngine), a WebGL-based engine from xeoLabs which lets us
-assemble 3D worlds from actor libraries and drive them over a network.
+assemble and drive 3D worlds over a network.
 
 ## Hello, World!
 
