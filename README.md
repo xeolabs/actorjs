@@ -87,11 +87,12 @@ Coolnesses to note in this example:
 
  * Assemble actors into hierarchies
  * Inject resource objects into your actors
+ * Drive ActorJS in an IFRAME using Cross-Domain Messaging
  * Put actors in Web Workers to multi-thread your app
 
 ## Documentation and Examples
- * Take a look at the [wiki](https://github.com/xeolabs/actorjs/wiki) for documentation and examples.
- * Peruse the [xeoEngine](https://github.com/xeolabs/xeoEngine) source code for an example of what you can build
+ * Peruse the [wiki](https://github.com/xeolabs/actorjs/wiki) for documentation and examples
+ * Browse the [xeoEngine](https://github.com/xeolabs/xeoEngine) source code for an example of what you can build
 
 ## License
 ActorJS is licensed under both the [GPL](https://github.com/xeolabs/actorjs/blob/master/licenses/GPL_LICENSE.txt)
