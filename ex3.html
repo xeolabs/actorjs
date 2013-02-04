@@ -6,7 +6,6 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
 
-    <script src="examples/libs/jquery-lib.1.7.1.min.js"></script>
     <script src="lib/require.js"></script>
 </head>
 <body style="padding: 20px;">
@@ -19,66 +18,63 @@
 
 <script>
 
-    jQuery(document).ready(
-            function ($) {
+    requirejs.config({
+        baseUrl:"."
+    });
 
-                requirejs.config({
-                    baseUrl:"."
+    /* Create an ActorJS instance
+     */
+    require([
+        'lib/actorjs/actorjs'
+    ],
+            function (actorjs) {
+
+                /* Tell ActorJS where to find actor types
+                 */
+                actorjs.configure({
+                    actorClassPath:"actors/"
                 });
 
-                /* Create an ActorJS instance
+                /* Add an instance of our group actor
                  */
-                require([
-                    'lib/actorjs/actorjs'
-                ],
-                        function (actorjs) {
+                actorjs.call("addActor", {
+                    type:"ex3/group",
+                    actorId:"group",
+                    myName:"Group"
+                });
 
-                            /* Tell ActorJS where to find actor types
-                             */
-                            actorjs.configure({
-                                actorClassPath:"actors/"
-                            });
-
-                            /* Add an instance of our group actor
-                             */
-                            actorjs.call("addActor", {
-                                type:"ex3/group",
-                                actorId:"group",
-                                myName:"Group"
-                            });
-
-                            /* Subscribe to the message the group actor will publish on behalf of either child
-                             */
-                            actorjs.subscribe("group/saidSomething",
-                                    function (params) {
-                                        alert("Actor group said " + params.message);
-                                    });
-
-                            /* Subscribe to the message the group actor's first child actor will publish
-                             */
-                            actorjs.subscribe("group/foo/saidSomething",
-                                    function (params) {
-                                        alert("Actor group/foo said " + params.message);
-                                    });
-
-                            /* Subscribe to the message its group actor's second child actor will publish
-                             */
-                            actorjs.subscribe("group/bar/saidSomething",
-                                    function (params) {
-                                        alert("Actor group/bar said " + params.message);
-                                    });
-
-
-                            /* When we click the button, call the group actor's 'saySomething' method, which
-                             * calls that method in turn on both of its child actors
-                             */
-                            $("#saySomething").click(
-                                    function () {
-                                        actorjs.call("group/saySomething", {
-                                            message:"Hello, World!"
-                                        });
-                                    });
+                /* Subscribe to the message the group actor will publish on behalf of either child
+                 */
+                actorjs.subscribe("group/saidSomething",
+                        function (params) {
+                            alert("Actor group said " + params.message);
                         });
+
+                /* Subscribe to the message the group actor's first child actor will publish
+                 */
+                actorjs.subscribe("group/foo/saidSomething",
+                        function (params) {
+                            alert("Actor group/foo said " + params.message);
+                        });
+
+                /* Subscribe to the message its group actor's second child actor will publish
+                 */
+                actorjs.subscribe("group/bar/saidSomething",
+                        function (params) {
+                            alert("Actor group/bar said " + params.message);
+                        });
+
+
+                /* When we click the button, call the group actor's 'saySomething' method, which
+                 * calls that method in turn on both of its child actors
+                 */
+                var myAnchor = document.getElementById("saySomething");
+
+                myAnchor.onclick = function () {
+                    actorjs.call("group/saySomething", {
+                        message:"Hello, World!"
+                    });
+                };
             });
 </script>
 </body>
