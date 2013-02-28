@@ -18,8 +18,8 @@ define(function () {
 
         this.saySomething = function (params) {
 
-            this.call("foo/saySomething", params);
-            this.call("bar/saySomething", params);
+            this.call("foo.saySomething", params);
+            this.call("bar.saySomething", params);
 
             this.publish("saidSomething", { message:myName + " says: " + params.message });
         };
