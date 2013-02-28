@@ -47,29 +47,33 @@ Then we create our application in [ex1.html](ex1.html):
      function (actorjs) {
 
          /* Tell the ActorJS instance where to find our actor types
+          * and optionally configure which path separator char we'll use
           */
          actorjs.configure({
-             actorClassPath:"actors/"
+             actorClassPath:"actors/",
+             pathSeparator: "." (default - can also be "/")
          });
 
-         /* Add an instance of our first example actor type
+         /* Add an instance of our first example actor type.
+          * The type "ex1.person" resolves to file "actors/ex1/person.js".
           */
          actorjs.call("addActor", {
-             type:"ex1/person",
+             type:"ex1.person",
              actorId:"foo",
              myName:"Foo"
          });
 
          /* Subscribe to the message the actor will publish
           */
-         actorjs.subscribe("foo/saidSomething", function (params) {
-             alert(params.message);
-         });
+         actorjs.subscribe("foo.saidSomething",
+            function (params) {
+                alert(params.message);
+            });
 
          /* Call the actor's 'saySomething' method, which
           * publishes that message back at us
           */
-         actorjs.call("foo/saySomething", {
+         actorjs.call("foo.saySomething", {
              message:"Hello, World!"
          });
      });
@@ -82,6 +86,7 @@ Coolnesses to note in this example:
  * We call methods on those instances asynchronously, some of which are built in to ActorJS, like 'addActor'
  * We can subscribe to publications that the actors make
  * Calls and subscriptions can be made immediately (i.e. asynchronously) because ActorJS buffers those until the actor exists.
+ * We're using a dot for the delimiter on paths to actor types, instances, methods and topics - that can be configured to be "/" if preferred, but a dot is default because it seems more readible.
 
 ### What else can I do?
 

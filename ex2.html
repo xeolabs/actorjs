@@ -38,28 +38,28 @@
                 /* Add an instance of our group actor
                  */
                 actorjs.call("addActor", {
-                    type:"ex2/group",
+                    type:"ex2.group",
                     actorId:"group",
                     myName:"Group"
                 });
 
                 /* Subscribe to the message the group actor will publish on behalf of either child
                  */
-                actorjs.subscribe("group/saidSomething",
+                actorjs.subscribe("group.saidSomething",
                         function (params) {
                             alert(params.message);
                         });
 
                 /* Subscribe to the message the group actor's first child actor will publish
                  */
-                actorjs.subscribe("group/foo/saidSomething",
+                actorjs.subscribe("group.foo.saidSomething",
                         function (params) {
                             alert(params.message);
                         });
 
                 /* Subscribe to the message its group actor's second child actor will publish
                  */
-                actorjs.subscribe("group/bar/saidSomething",
+                actorjs.subscribe("group.bar.saidSomething",
                         function (params) {
                             alert(params.message);
                         });
@@ -71,7 +71,7 @@
                 var myAnchor = document.getElementById("saySomething");
 
                 myAnchor.onclick = function () {
-                    actorjs.call("group/saySomething", {
+                    actorjs.call("group.saySomething", {
                         message:"Hello, World!"
                     });
                 };

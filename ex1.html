@@ -38,14 +38,14 @@
                 /* Add an instance of our first example actor type
                  */
                 actorjs.call("addActor", {
-                    type:"ex1/person",
+                    type:"ex1.person",
                     actorId:"foo",
                     myName:"Foo"
                 });
 
                 /* Subscribe to the message the actor will publish
                  */
-                actorjs.subscribe("foo/saidSomething",
+                actorjs.subscribe("foo.saidSomething",
                         function (params) {
                             alert(params.message);
                         });
@@ -56,7 +56,7 @@
                 var myAnchor = document.getElementById("saySomething");
 
                 myAnchor.onclick = function () {
-                    actorjs.call("foo/saySomething", {
+                    actorjs.call("foo.saySomething", {
                         message:"Hello, World!"
                     });
                     return false;

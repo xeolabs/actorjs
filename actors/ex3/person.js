@@ -6,7 +6,7 @@ define(function () {
 
         var myName = cfg.myName;
 
-        var myResource = this.getObject("myFirstResource");
+        var myResource = this.getResource("myFirstResource");
 
         this.saySomething = function (params) {
             myResource.saySomething(myName + " says: " + params.message );
