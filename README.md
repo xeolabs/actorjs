@@ -93,7 +93,7 @@ Coolnesses to note in this example:
  * [Assemble actors into hierarchies](http://xeolabs.github.com/actorjs/ex2.html)
  * [Inject resource objects into your actors](http://xeolabs.github.com/actorjs/ex3.html)
  * [Drive ActorJS in an IFRAME using Cross-Domain Messaging](http://xeolabs.github.com/actorjs/ex4.html)
- * [Put actors in Web Workers to multi-thread your app](http://xeolabs.github.com/actorjs/ex5.html)
+ * [JSON-level actor reuse using includes](http://xeolabs.github.com/actorjs/ex6.html)
 
 ## Documentation
  * Peruse the [wiki](https://github.com/xeolabs/actorjs/wiki) for documentation and examples
