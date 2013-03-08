@@ -5,17 +5,17 @@ define(function () {
         var myName = cfg.myName;
 
         this.addActor({
+            id:"foo",
             type:"ex4.person",
-            actorId:"foo",
             myName:"Foo",
-            worker: true
+            worker:true
         });
 
         this.addActor({
+            id:"bar",
             type:"ex4.person",
-            actorId:"bar",
             myName:"Bar",
-            worker: false
+            worker:false
         });
 
         this.saySomething = function (params) {

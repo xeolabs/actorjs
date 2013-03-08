@@ -7,20 +7,20 @@ define(function () {
         var myName = cfg.myName;
 
         this.setResource("myFirstResource", {
-            saySomething: function(sayWhat) {
+            saySomething:function (sayWhat) {
                 alert(sayWhat);
             }
         });
 
         this.addActor({
+            id:"foo",
             type:"ex3.person",
-            actorId:"foo",
             myName:"Foo"
         });
 
         this.addActor({
+            id:"bar",
             type:"ex3.person",
-            actorId:"bar",
             myName:"Bar"
         });
 

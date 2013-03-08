@@ -1,0 +1,17 @@
+{
+    "type":"ex1.person",
+    "myName":"Pointy Haired Boss",
+
+    "actors":[
+        {
+            "id":"dilbert",
+            "type":"ex1.person",
+            "myName":"Dilbert"
+        },
+        {
+            "id":"phil",
+            "type":"ex1.person",
+            "myName":"Phil"
+        }
+    ]
+}

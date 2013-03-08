@@ -5,14 +5,14 @@ define(function () {
         var myName = cfg.myName;
 
         this.addActor({
+            id:"foo",
             type:"ex2/person",
-            actorId:"foo",
             myName:"Foo"
         });
 
         this.addActor({
+            id:"bar",
             type:"ex2/person",
-            actorId:"bar",
             myName:"Bar"
         });
 

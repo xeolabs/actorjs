@@ -6,7 +6,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
 
-    <script src="lib/require.js"></script>
+    <script src="lib/requirejs/require.js"></script>
 </head>
 <body style="padding: 20px;">
 
@@ -29,13 +29,13 @@
                 /* Tell ActorJS where to find actor types
                  */
                 actorjs.configure({
-                    actorClassPath:"../examples/actors/"
+                    typePath:"../examples/actors/"
                 });
 
                 /* Add an instance of our group actor. It's the same as the group actor of ex2,
                  * but creates each of its child actors in a separate Web Worker.
                  */
-                actorjs.call("addActor", { type:"ex4.group", actorId:"group", myName:"Group"});
+                actorjs.call("addActor", { type:"ex4.group", id:"group", myName:"Group"});
 
                 /* Subscribe to the message the group actor will publish on behalf of either child
                  */

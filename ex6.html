@@ -1,18 +1,19 @@
 <!DOCTYPE html>
 <html lang="en" xmlns="http://www.w3.org/1999/html" xmlns="http://www.w3.org/1999/html">
 <head>
-    <title>ActorJS Example 2: Actor Hierarchies</title>
+    <title>ActorJS Example 6: Including actor scripts</title>
 
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
 
     <script src="lib/requirejs/require.js"></script>
+
 </head>
 <body style="padding: 20px;">
 
-<h1>ActorJS Example 2: Actor Hierarchies</h1>
+<h1>ActorJS Example 6: Actor Includes</h1>
 
-<h2><a href="" id="saySomething">Say something!</a></h2>
+<h2><a href="javascript:saySomething()">Say something!</a></h2>
 
 <script>
 
@@ -29,49 +30,42 @@
     ],
             function (actorjs) {
 
-                /* Tell ActorJS where to find actor types
+                /* Tell ActorJS where to find actor types and includes
                  */
                 actorjs.configure({
-                    typePath:"actors/"
+                    typePath:"actors/",
+                    includePath:"includes/"
                 });
 
-                /* Add an instance of our group actor
+                /* Include a 'boss' actor, which contains child actors for Dilbert and Phil
                  */
                 actorjs.call("addActor", {
-                    type:"ex2.group",
-                    id:"group",
-                    myName:"Group"
+                    include:"ex6.pointyHairedBoss",
+                    id:"boss"
                 });
 
-                /* Subscribe to the message the group actor will publish on behalf of either child
+                /* Subscribe to Dilbert's messages
                  */
-                actorjs.subscribe("group.saidSomething",
+                actorjs.subscribe("boss.dilbert.saidSomething",
                         function (params) {
                             alert(params.message);
                         });
 
-                /* Subscribe to the message the group actor's first child actor will publish
+                /* Subscribe to Phil's messages
                  */
-                actorjs.subscribe("group.foo.saidSomething",
-                        function (params) {
-                            alert(params.message);
-                        });
-
-                /* Subscribe to the message its group actor's second child actor will publish
-                 */
-                actorjs.subscribe("group.bar.saidSomething",
+                actorjs.subscribe("boss.phil.saidSomething",
                         function (params) {
                             alert(params.message);
                         });
 
 
-                /* When we click the button, call the group actor's 'saySomething' method, which
-                 * calls that method in turn on both of its child actors
-                 */
-                var myAnchor = document.getElementById("saySomething");
+                window.saySomething = function () {
 
-                myAnchor.onclick = function () {
-                    actorjs.call("group.saySomething", {
+                    actorjs.call("boss.dilbert.saySomething", {
+                        message:"Hello, World!"
+                    });
+
+                    actorjs.call("boss.phil.saySomething", {
                         message:"Hello, World!"
                     });
                 };

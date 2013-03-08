@@ -50,7 +50,7 @@ Then we create our application in [ex1.html](ex1.html):
           * and optionally configure which path separator char we'll use
           */
          actorjs.configure({
-             actorClassPath:"actors/",
+             typePath:"actors/",
              pathSeparator: "." // (optional - default is "/")
          });
 
@@ -58,8 +58,8 @@ Then we create our application in [ex1.html](ex1.html):
           * The type "ex1.person" resolves to file "actors/ex1/person.js".
           */
          actorjs.call("addActor", {
+             id:"foo",
              type:"ex1.person",
-             actorId:"foo",
              myName:"Foo"
          });
 
