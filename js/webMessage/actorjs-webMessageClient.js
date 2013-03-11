@@ -6,7 +6,7 @@
      * @param cfg
      * @param {String} cfg.iframe ID of an IFRAME containing an actorJS server page
      */
-    window.ActorJSPageClient = function (cfg) {
+    window.ActorJSWebMessageClient = function (cfg) {
 
         if (!cfg.iframe) {
             throw "config expected: iframe";
