@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/html" xmlns="http://www.w3.org/1999/html">
+<head>
+    <title>ActorJS Server Page</title>
+
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+
+    <script src="../build/actorjs.js"></script>
+    <script src="lib/require.js"></script>
+
+</head>
+<body>
+
+<p>An ActorJS instance is running in this IFRAME</p>
+
+<script>
+
+    /* Point RequireJS at where our actor types live
+     */
+    requirejs.config({
+        baseUrl:"actors/"
+    });
+
+    /* Configure ActorJS to load actor types from AMD modules via RequireJS
+     */
+    ActorJS.configure({
+        typeLoader:function (path, ok, error) {
+            require([path], ok, error);
+        }
+    });
+
+    /* Create a stage to contain actors
+     */
+    var stage = ActorJS.createStage();
+
+    /* Serve the stage
+     */
+    var server = new ActorJS.WebMessageServer(stage);
+
+</script>
+</body>
+</html>

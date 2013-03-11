@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/html" xmlns="http://www.w3.org/1999/html">
+<head>
+    <title>ActorJS Example</title>
+
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+
+    <script src="../build/actorjs.js"></script>
+
+</head>
+<body style="padding: 20px;">
+
+<h1>ActorJS Example: JSON Actor Includes</h1>
+
+<h2><a href="" id="saySomething">Say something!</a></h2>
+
+<script>
+
+    /* Configure base path to JSON actor includes
+     */
+    ActorJS.configure({
+        includePath:"includes/"
+    });
+
+    /* Create a stage to contain actors
+     */
+    var stage = ActorJS.createStage();
+
+    /* Define an actor type, which will be instantiated by our JSON include
+     */
+    ActorJS.addActorType("person",
+            function (cfg) {
+
+                var myName = cfg.myName;
+
+                this.saySomething = function (params) {
+                    this.publish("saidSomething", {
+                        message:myName + " says: " + params.message
+                    });
+                };
+            });
+
+    /* Include an actor from a JSON snippet
+     * Note how the include resolves to "includes/people/pointyHairedBoss.js
+     */
+    stage.call("addActor", {
+        id:"boss",
+        include:"people.pointyHairedBoss",
+        myName:"Boss"
+    });
+
+    /* Subscribe to Dilbert's messages
+     */
+    stage.subscribe("boss.dilbert.saidSomething",
+            function (params) {
+                alert(params.message);
+            });
+
+    /* Subscribe to Phil's messages
+     */
+    stage.subscribe("boss.phil.saidSomething",
+            function (params) {
+                alert(params.message);
+            });
+
+    /* When we click the button, call the actor's 'saySomething' method, which
+     * publishes that message back at us
+     */
+    var myAnchor = document.getElementById("saySomething");
+
+    myAnchor.onclick = function () {
+        stage.call("boss.dilbert.saySomething", {
+            message:"Hello, World!"
+        });
+
+        return false;
+    };
+
+</script>
+
+<a href="https://github.com/xeolabs/actorjs" target="_blank"><img
+        style="position: absolute; top: 0; right: 0; border: 0;"
+        src="https://s3.amazonaws.com/github/ribbons/forkme_right_green_007200.png"
+        alt="Fork me on GitHub"></a>
+</body>
+</html>

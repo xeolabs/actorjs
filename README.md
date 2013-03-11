@@ -1,9 +1,9 @@
 ActorJS
 =======
 
-ActorJS is a JavaScript framework/boilerplate that structures apps as actors that communicate via asynchronous JSON-RPC and publish-subscribe messaging.
+ActorJS is a JavaScript framework that structures apps as actors that communicate via asynchronous JSON-RPC and publish-subscribe messaging.
 
-With ActorJS, you define actor types as RequireJS modules, then send JSON-RPC calls to instantiate them, call their methods,
+With ActorJS, you define actor types then fire JSON-RPC calls to instantiate them, invoke their methods,
 subscribe to their publications, delete them, and so forth.
 
 ActorJS is being developed in the context of [xeoEngine](https://github.com/xeolabs/xeoEngine), a WebGL-based engine from xeoLabs which lets us
@@ -11,89 +11,70 @@ assemble and drive 3D worlds over a network.
 
 ## Hello, World!
 
-Check out this super basic example.
-In file [actors/ex1/person.js](actors/ex1/person.js), we'll define a simple actor
+Check out this super basic example - we'll define a simple actor type
 which will publish whatever we tell it to say:
 
 ```javascript
-define(function () {
-
-    return function (cfg) {
+ActorJS.addActorType("person",
+    function (cfg) {
 
         var myName = cfg.myName;
 
         this.saySomething = function (params) {
-            this.publish("saidSomething", { message:myName + " says: " + params.message });
+            this.publish("saidSomething", {
+                message:myName + " says: " + params.message
+            });
         };
-    };
-});
+    });
 ```
 
-Then we create our application in [ex1.html](ex1.html):
+Create an instance of the type:
 
 ```javascript
 
- /* Configure RequireJS
-  */
- requirejs.config({
-     baseUrl:"."
- });
+/* Create a stage
+ */
+var stage = ActorJS.createStage();
 
- /* Get an ActorJS instance
-  */
- require([
-     '../lib/actorjs/actorjs'],
-
-     function (actorjs) {
-
-         /* Tell the ActorJS instance where to find our actor types
-          * and optionally configure which path separator char we'll use
-          */
-         actorjs.configure({
-             typePath:"actors/",
-             pathSeparator: "." // (optional - default is "/")
-         });
-
-         /* Add an instance of our first example actor type.
-          * The type "ex1.person" resolves to file "actors/ex1/person.js".
-          */
-         actorjs.call("addActor", {
-             id:"foo",
-             type:"ex1.person",
-             myName:"Foo"
-         });
-
-         /* Subscribe to the message the actor will publish
-          */
-         actorjs.subscribe("foo.saidSomething",
-            function (params) {
-                alert(params.message);
-            });
-
-         /* Call the actor's 'saySomething' method, which
-          * publishes that message back at us
-          */
-         actorjs.call("foo.saySomething", {
-             message:"Hello, World!"
-         });
-     });
+stage.call("addActor", {
+    id:"dilbert",
+    type:"person",
+    myName:"Dilbert"
+});
 ```
 
-[Run it here](http://xeolabs.github.com/actorjs/ex1.html)
+Subscribe to the message the actor will publish:
+
+```javascript
+stage.subscribe("dilbert.saidSomething",
+   function (params) {
+       alert(params.message);
+});
+```
+
+Call the actor's 'saySomething' method, which publishes that message back at us:
+
+```javascript
+stage.call("dilbert.saySomething", {
+    message:"Hello, World!"
+});
+```
+
+[Run it here](http://xeolabs.github.com/actorjs/helloWorld.html)
 
 Coolnesses to note in this example:
- * We're instantiating actor types that are defined in AMD modules
- * We call methods on those instances asynchronously, some of which are built in to ActorJS, like 'addActor'
- * We can subscribe to publications that the actors make
- * Calls and subscriptions can be made immediately (i.e. asynchronously) because ActorJS buffers those until the actor exists.
+ * We're instantiating actors and calling methods and subscribing to subscriptions on them asynchronously.
+ * Actor types can also be dynamically loaded on demand, such as from AMD modules.
+ * Those calls and subscriptions can be made immediately (i.e. asynchronously) because ActorJS buffers those until the actor exists.
  * We're using a dot for the delimiter on paths to actor types, instances, methods and topics - that can be configured to be "/" if preferred, but a dot is default because it seems more readible.
 
 ### What else can I do?
 
- * [Assemble actors into hierarchies](http://xeolabs.github.com/actorjs/ex2.html)
- * [Inject resource objects into your actors](http://xeolabs.github.com/actorjs/ex3.html)
- * [Drive ActorJS in an IFRAME using Cross-Domain Messaging](http://xeolabs.github.com/actorjs/ex4.html)
- * [JSON-level actor reuse using includes](http://xeolabs.github.com/actorjs/ex6.html)
+ * [Actor trees](http://xeolabs.github.com/actorjs/actorHierarchy.html)
+ * [Inject resources](http://xeolabs.github.com/actorjs/actorResources.html)
+ * [Distribute actors across multiple documents using Web Messaging](http://xeolabs.github.com/actorjs/client.html)
+ * [Load actor types from AMD modules](http://xeolabs.github.com/actorjs/actorModules.html)
+ * [Compose actor trees using JSON includes](http://xeolabs.github.com/actorjs/actorIncludes.html)
 
 ## Documentation
  * Peruse the [wiki](https://github.com/xeolabs/actorjs/wiki) for documentation and examples

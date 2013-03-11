@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/html" xmlns="http://www.w3.org/1999/html">
+<head>
+    <title>ActorJS Example: Hello, World!</title>
+
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+
+    <script src="../build/actorjs.js"></script>
+
+</head>
+<body style="padding: 20px;">
+
+<h1>ActorJS Example: Hello, World!</h1>
+
+<h2><a href="" id="saySomething">Say something!</a></h2>
+
+<script>
+
+    /* Define an actor type
+     */
+    ActorJS.addActorType("person",
+            function (cfg) {
+
+                var myName = cfg.myName;
+
+                this.saySomething = function (params) {
+                    this.publish("saidSomething", {
+                        message:myName + " says: " + params.message
+                    });
+                };
+            });
+
+    /* Create a stage to contain actors
+     */
+    var stage = ActorJS.createStage();
+
+    /* Add an instance of our actor type
+     */
+    stage.call("addActor", {
+        type:"person",
+        id:"dilbert",
+        myName:"Dilbert"
+    });
+
+    /* Subscribe to the message the actor will publish
+     */
+    stage.subscribe("dilbert.saidSomething",
+            function (params) {
+                alert(params.message);
+            });
+
+    /* When we click the button, call the actor's 'saySomething' method
+     */
+    var myAnchor = document.getElementById("saySomething");
+
+    myAnchor.onclick = function () {
+        stage.call("dilbert.saySomething", {
+            message:"Hello, World!"
+        });
+    };
+
+</script>
+<a href="https://github.com/xeolabs/actorjs" target="_blank"><img
+        style="position: absolute; top: 0; right: 0; border: 0;"
+        src="https://s3.amazonaws.com/github/ribbons/forkme_right_green_007200.png"
+        alt="Fork me on GitHub"></a>
+</body>
+</html>
