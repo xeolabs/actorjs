@@ -70,11 +70,11 @@ Coolnesses to note in this example:
 
 ### What else can I do?
 
- * [Actor trees](http://xeolabs.github.com/actorjs/actorHierarchy.html)
- * [Inject resources](http://xeolabs.github.com/actorjs/actorResources.html)
- * [Distribute actors across multiple documents using Web Messaging](http://xeolabs.github.com/actorjs/client.html)
- * [Load actor types from AMD modules](http://xeolabs.github.com/actorjs/actorModules.html)
- * [Compose actor trees using JSON includes](http://xeolabs.github.com/actorjs/actorIncludes.html)
+ * [Actor trees](http://xeolabs.github.com/actorjs/examples/actorHierarchy.html)
+ * [Inject resources](http://xeolabs.github.com/actorjs/examples/actorResources.html)
+ * [Distribute actors across multiple documents using Web Messaging](http://xeolabs.github.com/actorjs/examples/client.html)
+ * [Load actor types from AMD modules](http://xeolabs.github.com/actorjs/examples/actorModules.html)
+ * [Compose actor trees using JSON includes](http://xeolabs.github.com/actorjs/examples/actorIncludes.html)
 
 ## Documentation
  * Peruse the [wiki](https://github.com/xeolabs/actorjs/wiki) for documentation and examples
