@@ -197,7 +197,7 @@ Configure ActorJS with a loader that wraps RequireJS:
 ```javascript
 ActorJS.configure({
     typeLoader:function (path, ok, error) {
-        require([path], ok, error);
+        require(["actors/" + path], ok, error);
     }
 });
 ```
@@ -313,7 +313,7 @@ First, whip up a page that exposes an ActorJS stage to Web Message clients:
     // Plug a loader into ActorJS:
     ActorJS.configure({
         typeLoader:function (path, ok, error) {
-            require([path], ok, error);
+            require(["actors/" + path], ok, error);
         }
     });
 
