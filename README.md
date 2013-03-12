@@ -16,7 +16,7 @@ Features:
 * Declarative JSON syntax
 * JSON-RPC + publish/subscribe API (completely message-driven)
 * [Custom actor types](#example-1-hello-world)
-* [Load actor types on demand (eg. from RequireJS modules)](#example-3-using-requirejs)
+* [Load actor types on demand](#example-3-using-requirejs) (eg. from RequireJS modules)
 * Multiple actor stages (containers for actors)
 * [Use 'includes' to compose actor hierarchies from JSON libraries](#example-4-json-includes)
 * [Client/server on HTML5 Web Message API](#example-5-clientserver-on-html5-web-messaging-api)
