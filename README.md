@@ -187,10 +187,10 @@ define(function () {
     };
 });
 ```
-Point RequireJS at the base directory where the actor type lives:
+Point RequireJS at the base directory:
 ```javascript
 requirejs.config({
-    baseUrl:"actors/"
+    baseUrl:"."
 });
 ```
 Configure ActorJS with a loader that wraps RequireJS:
@@ -305,9 +305,9 @@ First, whip up a page that exposes an ActorJS stage to Web Message clients:
 <script>
 
     // We'll use RequireJS to hot-load actor types.
-    // Tell it where to find them:
+    // Point it at the base directory:
     requirejs.config({
-        baseUrl:"actors/"
+        baseUrl:"."
     });
 
     // Plug a loader into ActorJS:
