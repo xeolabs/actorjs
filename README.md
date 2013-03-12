@@ -42,7 +42,7 @@ assemble and drive 3D worlds over a network.
 # Documentation
 
  * [JavaScript API Docs](http://xeolabs.github.com/actorjs/docs/) (work in progress!)
- * [Wiki](https://github.com/xeolabs/actorjs/wiki) for documentation
+ * [Wiki](https://github.com/xeolabs/actorjs/wiki)
  * [xeoEngine](https://github.com/xeolabs/xeoEngine) - a project under development on top of ActorJS
 
 # Examples
