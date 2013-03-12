@@ -77,7 +77,7 @@ stage.call("dilbert.saySomething", {
 ```
 **[[Run this example]]**(http://xeolabs.github.com/actorjs/helloWorld.html)
 
-# Example 2: Actor Hierarchies
+## Example 2: Actor Hierarchies
 
 Typically you would compose actors into hierarchies, then use paths into the hierarchies to resolve actor methods and topics.
 As before, define the "person" actor type:
@@ -381,7 +381,7 @@ for xeoEngine (built on ActorJS) [like this](http://xeolabsblog.blogspot.de/2013
 
 **[[Run this example]]**(http://xeolabs.github.com/actorjs/examples/client.html)
 
-## Example 6: Injecting resources
+## Example 6: Injecting Resources
 Actors can manage JavaScript objects for their children to use. We'll build on [example 2](#example-2-actor-hierarchies),
 this time with a resource object that the children will send messages through.
 
