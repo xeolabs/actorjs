@@ -22,6 +22,11 @@ Features:
 * [Client/server on HTML5 Web Message API](#example-5-clientserver-on-html5-web-messaging-api)
 * [Inject resources for actors](#example-6-injecting-resources)
 
+## Documentation
+
+ * Consult the [API docs](http://xeolabs.github.com/actorjs/docs/) (work in progress!)
+ * Peruse the [wiki](https://github.com/xeolabs/actorjs/wiki) for documentation and examples
+ * Browse the [xeoEngine](https://github.com/xeolabs/xeoEngine) source code for an example of what you can build
 
 ## Example 1: Hello, World
 
@@ -448,12 +453,6 @@ stage.call("group.saySomething", {
 ```
 
 [Run it here](http://xeolabs.github.com/actorjs/examples/actorResources.html)
-
-## Documentation
-
- * Consult the [API docs](http://xeolabs.github.com/actorjs/docs/) (work in progress!)
- * Peruse the [wiki](https://github.com/xeolabs/actorjs/wiki) for documentation and examples
- * Browse the [xeoEngine](https://github.com/xeolabs/xeoEngine) source code for an example of what you can build
 
 ## License
 ActorJS is licensed under both the [GPL](https://github.com/xeolabs/actorjs/blob/master/licenses/GPL_LICENSE.txt)
