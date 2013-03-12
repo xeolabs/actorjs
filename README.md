@@ -3,10 +3,10 @@ ActorJS
 
 ActorJS is a JavaScript framework that structures apps as actors that communicate via asynchronous JSON-RPC and publish-subscribe messaging.
 
-With ActorJS, you define actor types then fire JSON-RPC calls to instantiate them, invoke their methods,
+With ActorJS, you define actor types then fire calls to instantiate them, invoke their methods,
 subscribe to their publications, delete them, and so forth.
 
-ActorJS is being developed in the context of [xeoEngine](https://github.com/xeolabs/xeoEngine), a WebGL-based engine from xeoLabs which lets us
+ActorJS is being developed in the context of [xeoEngine](https://github.com/xeolabs/xeoEngine), a WebGL-based engine which lets us
 assemble and drive 3D worlds over a network.
 
 Features:
