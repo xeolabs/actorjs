@@ -16,8 +16,9 @@ Features:
 * Declarative JSON syntax
 * JSON-RPC + publish/subscribe API (completely message-driven)
 * [Custom actor types](#example-1-hello-world)
-* [Load actor types on demand](#example-3-using-requirejs) (eg. from RequireJS modules)
-* Multiple actor stages (containers for actors)
+* [Actor type libraries loaded on demand](#example-3-using-requirejs) (eg. from AMD modules)
+* [Promise-based synchronisation](http://en.wikipedia.org/wiki/Promise_(programming)) (no callbacks needed anywhere)
+* Multiple actor containers
 * [Use 'includes' to compose actor hierarchies from JSON libraries](#example-4-json-includes)
 * [Client/server on HTML5 Web Message API](#example-5-clientserver-on-html5-web-messaging-api)
 * [Inject resources for actors](#example-6-injecting-resources)
@@ -228,6 +229,13 @@ stage.call("foo.saySomething", {
 ```
 [[Run this example]](http://xeolabs.github.com/actorjs/examples/actorModules.html)
 
+* ActorJS will cache the "people.person" actor type the first time it's loaded, which offsets the XHR overhead if we instantiate the type many times.
+* Still, if you want better performance and don't care about hot-loading actor types on demand, then you can define your actor
+types as plain JavaScript libs that use ```ActorJS.addActorType```, then compress and concatenate them into one lib and load that statically.
+* ActorJS uses [promises](http://en.wikipedia.org/wiki/Promise_(programming)) for calls and subscriptions. That means we
+ can just instantiate actor types and use them immediately without having to synchronise with their appearance. Behind the scenes,
+ ActorJS will buffer everything until the actor types load and instances exist.
+
 ## Example 4: JSON Includes
 For a higher level of reuse, we can create libraries of JSON components then pull them into our actor graphs as **includes**.
 
@@ -342,6 +350,7 @@ if the ActorJS environment was actually in the client page. We'll make a variati
             iframe:"myIFrame"
         });
 
+        // We can create whole actor hierarchies in one call:
         client.call("addActor", {
             id:"boss",
             type:"people/person",
@@ -373,7 +382,7 @@ if the ActorJS environment was actually in the client page. We'll make a variati
 </body>
 </html>
 ```
-The coolness here is that the client page only depends on the ActorJS [client library](https://github.com/xeolabs/actorjs/blob/master/build/actorjs-webMessageClient.js),
+The main coolness here is that the client page only depends on the ActorJS [client library](https://github.com/xeolabs/actorjs/blob/master/build/actorjs-webMessageClient.js),
 meaning that the client bits can be embedded in blogs and code sharing sites like [CodePen](http://codepen.io), without having
 to upload all your actors' dependencies there (image files etc). This has proved useful for sharing examples
 for xeoEngine (built on ActorJS) [like this](http://xeolabsblog.blogspot.de/2013/02/xeoengine-is-message-driven-webgl.html).
