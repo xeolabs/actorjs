@@ -443,8 +443,7 @@ stage.call("addActor", {
     type:"group",
     myName:"Group"
 });
-```
-```javascript
+
 stage.subscribe("group.saidSomething",
      function (params) {
          alert(params.message);
