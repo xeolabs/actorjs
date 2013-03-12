@@ -257,18 +257,18 @@ Next, lets create a JSON component (in [includes/people/pointyHairedBoss.json](e
 
 ```json
 {
-    "type":"people/person",
+    "type":"people.person",
     "myName":"Pointy Haired Boss",
 
     "actors":[
         {
             "id":"dilbert",
-            "type":"people/person",
+            "type":"people.person",
             "myName":"Dilbert"
         },
         {
             "id":"phil",
-            "type":"people/person",
+            "type":"people.person",
             "myName":"Phil"
         }
     ]
