@@ -253,7 +253,7 @@ Lets create a hierarchy of three "person" actor types, as a JSON component (in [
     ]
 }
 ```
-Note that the root actor has no ID - each time we include one of these components, we're creating a separate instance of it,
+Note that the root actor in this component has no ID - each time we include one of these, we're creating a separate instance of it,
 which will get its own ID.
 
 Next, configure ActorJS with the base directory where our JSON components live:
