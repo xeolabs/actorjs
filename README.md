@@ -239,29 +239,43 @@ types as plain JavaScript libs that use ```ActorJS.addActorType```, then compres
 ## Example 4: JSON Includes
 For a higher level of reuse, we can create libraries of JSON components then pull them into our actor graphs as **includes**.
 
+First, let's create a ```people/person``` actor type. Just for fun, let's make it an AMD module like before:
+```javascript
+define(function () {
 
-Lets create a hierarchy of three "person" actor types, as a JSON component (in [includes/people/pointyHairedBoss.json](examples/includes/people/pointyHairedBoss.json)):
+    return function (cfg) {
+
+        var myName = cfg.myName;
+
+        this.saySomething = function (params) {
+            this.publish("saidSomething", { message:myName + " says: " + params.message });
+        };
+    };
+});
+```
+Next, lets create a JSON component (in [includes/people/pointyHairedBoss.json](examples/includes/people/pointyHairedBoss.json)) that defines a hierarchy containing three of those actor types:
 
 ```json
 {
-    "type":"person",
+    "type":"people/person",
     "myName":"Pointy Haired Boss",
 
     "actors":[
         {
             "id":"dilbert",
-            "type":"person",
+            "type":"people/person",
             "myName":"Dilbert"
         },
         {
             "id":"phil",
-            "type":"person",
+            "type":"people/person",
             "myName":"Phil"
         }
     ]
 }
 ```
-Note that the root actor in this component has no ID - each time we include one of these, we're creating a separate instance of it,
+* See how each actor in this component will be an instance of the ```people/person``` type we created.
+* The root actor in this component has no ID - each time we include one of these, we're creating a separate instance of it,
 which will get its own ID.
 
 Next, configure ActorJS with the base directory where our JSON components live:
