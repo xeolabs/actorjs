@@ -12,14 +12,15 @@ assemble and drive 3D worlds over a network.
 Features:
 --------------------------------------------------------------------------------
 
-* Actor hierarchies - [example](#example-2-actor-hierarchies)
+* [Actor hierarchies](#example-2-actor-hierarchies)
 * Declarative JSON syntax
 * JSON-RPC + publish/subscribe API (completely message-driven)
-* Custom actor types
-* Load actor types on demand (eg. from RequireJS modules) - [example](#example-3-using-requirejs)
+* [Custom actor types](#example-1-hello-world)
+* [Load actor types on demand (eg. from RequireJS modules)](#example-3-using-requirejs)
 * Multiple actor stages (containers for actors)
-* Use 'includes' to compose actor hierarchies from JSON libraries - [example](#example-4-json-includes)
-* Client/server on HTML5 Web Message API
+* [Use 'includes' to compose actor hierarchies from JSON libraries](#example-4-json-includes)
+* [Client/server on HTML5 Web Message API](#example-5-clientserver-on-html5-web-messaging-api)
+* [Inject resources for actors](#example-6-injecting-resources)
 
 
 ## Example 1: Hello, World
@@ -165,7 +166,7 @@ stage.call("group.saySomething", {
 # Example 3: Using RequireJS
 
 ActorJS encourages you create libraries of reusable actor types, to instantiate as required for each application.
-Lets do a variation on Example 1, this time providing the "person" actor type as an AMD module (in [actors/people/person.js](examples/actors/people/person.js)):
+Lets do a variation on [Example 1](#example-1-hello-world), this time providing the "person" actor type as an AMD module (in [actors/people/person.js](examples/actors/people/person.js)):
 
 ```javascript
 define(function () {
@@ -322,7 +323,8 @@ First, whip up a page that exposes an ActorJS stage to Web Message clients:
 </html>
 ```
 Then we'll make a client page which will embed our server page in an iframe and drive it remotely, just as if
-if the ActorJS environment was actually in the client page. We'll make Example 1 again (but this time remotely via messages!):
+if the ActorJS environment was actually in the client page. We'll make [Example 1](#example-1-hello-world) again
+(but this time remotely via messages!):
 ```html
 <html>
 <head>
@@ -358,6 +360,96 @@ if the ActorJS environment was actually in the client page. We'll make Example 1
 What's cool here is that the client page only depends on the ActorJS [client library](https://github.com/xeolabs/actorjs/blob/master/build/actorjs-webMessageClient.js),
 meaning that the client bits can be embedded in blogs and code sharing sites like [CodePen](http://codepen.io), without having
 to upload all your actor's dependencies there (image files etc).
+
+## Example 6: Injecting resources
+Actors can manage JavaScript objects for their children to use. We'll build on [example 2](#example-2-actor-hierarchies),
+this time with a resource object that the children will send messages through.
+
+Define a "person" actor type like before, but this time it's going to say something its thing via a resource:
+```javascript
+ActorJS.addActorType("person",
+    function (cfg) {
+
+        var myName = cfg.myName;
+
+        var myResource = this.getResource("myResource");
+
+        this.saySomething = function (params) {
+            myResource.saySomething(myName + " says: " + params.message);
+        };
+});
+```
+Next, define a "group" actor which injects a messaging resource where the child actor can get it.
+The resource is just a simple JavaScript object with a ```saySomething``` method:
+```javascript
+ActorJS.addActorType("group",
+    function (cfg) {
+
+        var myName = cfg.myName;
+
+        this.setResource("myResource", {
+            saySomething:function (sayWhat) {
+                alert(sayWhat);
+            }
+        });
+
+        this.addActor({
+            id:"foo",
+            type:"person",
+            myName:"Foo"
+        });
+
+        this.addActor({
+            id:"bar",
+            type:"person",
+            myName:"Bar"
+        });
+
+        this.saySomething = function (params) {
+
+            this.call("foo.saySomething", params);
+            this.call("bar.saySomething", params);
+
+            this.publish("saidSomething", { message: myName + " says: " + params.message });
+        };
+    });
+```
+And finally, just like before, create the "group" actor, do the subscriptions and call:
+```javascript
+Create a stage and add the "group" actor:
+
+```javascript
+var stage = ActorJS.createStage();
+
+stage.call("addActor", {
+    id:"group",
+    type:"group",
+    myName:"Group"
+});
+```
+```javascript
+stage.subscribe("group.saidSomething",
+     function (params) {
+         alert(params.message);
+     });
+
+stage.subscribe("group.foo.saidSomething",
+     function (params) {
+         alert(params.message);
+     });
+
+stage.subscribe("group.bar.saidSomething",
+    function (params) {
+        alert(params.message);
+    });
+
+stage.call("group.saySomething", {
+     message:"Hello, World!"
+});
+```
+```
+
+
 
 ### What else can I do?
 
