@@ -12,13 +12,13 @@ assemble and drive 3D worlds over a network.
 Features:
 --------------------------------------------------------------------------------
 
-* [Actor hierarchies](#example-2-actor-hierarchies)
+* Actor hierarchies - [example](#example-2-actor-hierarchies)
 * Declarative JSON syntax
 * JSON-RPC + publish/subscribe API (completely message-driven)
 * Custom actor types
-* [Load actor types on demand (eg. from RequireJS modules)](#example-3-using-requirejs)
+* Load actor types on demand (eg. from RequireJS modules) - [example](#example-3-using-requirejs)
 * Multiple actor stages (containers for actors)
-* [Use 'includes' to compose actor hierarchies from JSON libraries](#example-4-json-includes)
+* Use 'includes' to compose actor hierarchies from JSON libraries - [example](#example-4-json-includes)
 * Client/server on HTML5 Web Message API
 
 
@@ -281,6 +281,77 @@ stage.call("foo.saySomething", {
 ```
 [Run it here](http://xeolabs.github.com/actorjs/examples/actorIncludes.html)
 
+## Example 5: Client/server on HTML5 Web Messaging API
+
+ActorJS's message-driven JSON API allows us to drive everything remotely via the HTML5 Web Messaging API.
+
+First, whip up a page that serves an ActorJS stage:
+
+```html
+<html>
+<head>
+    <script src="../build/actorjs.js"></script>
+    <script src="lib/require.js"></script>
+</head>
+<body>
+<script>
+    requirejs.config({
+        baseUrl:"actors/"
+    });
+    ActorJS.configure({
+        typeLoader:function (path, ok, error) {
+            require([path], ok, error);
+        }
+    });
+    var stage = ActorJS.createStage();
+    var server = new ActorJS.WebMessageServer(stage);
+
+</script>
+</body>
+</html>
+```
+Then we'll make a client page which will embed our server page in an iframe and drive it remotely, just as if
+if the ActorJS environment was actually in the client page:
+```html
+<html>
+<head>
+    <script src="../build/actorjs-webMessageClient.js"></script>
+</head>
+<body>
+    <iframe id="myIFrame" src="server.html"></iframe>
+```
+We'll make Example 1 again (but this time remotely via messages!):
+
+```html
+
+    <script>
+
+        var client = new ActorJSWebMessageClient({
+            iframe:"myIFrame"
+        });
+
+        client.call("addActor", {
+            id:"dilbert",
+            type:"person",
+            myName:"Dilbert"
+        });
+
+        client.subscribe("dilbert.saidSomething",
+            function (params) {
+                alert(params.message);
+            });
+
+        client.call("dilbert.saySomething", {
+            message:"Hello, World!"
+        });
+
+    </script>
+</body>
+</html>
+```
+What's cool here is that the client page only depends on the ActorJS [client library](https://github.com/xeolabs/actorjs/blob/master/build/actorjs-webMessageClient.js),
+meaning that the client bits can be embedded in blogs and code sharing sites like [CodePen](http://codepen.io), without having
+to upload all your actor's dependencies there (image files etc).
 
 ### What else can I do?
 
