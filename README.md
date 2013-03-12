@@ -12,7 +12,7 @@ assemble and drive 3D worlds over a network.
 # Contents
 
 * [Features](#features)
-* [Documentation](#documentation)
+* [Links](#links)
 * [Examples](#examples)
   * [Hello, World!](#example-1-hello-world)
   * [Actor Hierarchies](#example-2-actor-hierarchies)
@@ -40,12 +40,11 @@ assemble and drive 3D worlds over a network.
 * [Client/server on HTML5 Web Message API](#example-5-clientserver-on-html5-web-messaging-api)
 * [Inject resources for actors](#example-6-injecting-resources)
 
-# Documentation
+# Links
 
- * This page is the guide book
- * Consult the [JavaScript API docs](http://xeolabs.github.com/actorjs/docs/) (work in progress!)
- * Peruse the [wiki](https://github.com/xeolabs/actorjs/wiki) for documentation and examples
- * Browse the [xeoEngine](https://github.com/xeolabs/xeoEngine) project code for an example of what you can build
+ * [JavaScript API Docs](http://xeolabs.github.com/actorjs/docs/) (work in progress!)
+ * [Wiki](https://github.com/xeolabs/actorjs/wiki) for documentation
+ * [xeoEngine](https://github.com/xeolabs/xeoEngine) - a project under development on top of ActorJS
 
 # Examples
 
