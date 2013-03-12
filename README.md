@@ -348,12 +348,12 @@ if the ActorJS environment was actually in the client page. We'll make a variati
             myName:"Boss",
             actors: [
                 {
-                    id: "Dilbert",
+                    id: "dilbert",
                     type: "people/person",
                     myName: "Dilbert"
                 },
                 {
-                    id: "Phil",
+                    id: "phil",
                     type: "people/person",
                     myName: "Phil"
                 }
