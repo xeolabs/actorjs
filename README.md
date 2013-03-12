@@ -9,8 +9,15 @@ subscribe to their publications, delete them, and so forth.
 ActorJS is being developed in the context of [xeoEngine](https://github.com/xeolabs/xeoEngine), a WebGL-based engine which lets us
 assemble and drive 3D worlds over a network.
 
-Features:
---------------------------------------------------------------------------------
+**Contents**
+* [Features](#features)
+* [Documentation](#documentation)
+* [Examples](#examples)
+* [Configuration](#configuration)
+* [License](#license)
+* [Inspirations](#inspirations)
+
+## Features:
 
 * [Actor hierarchies](#example-2-actor-hierarchies)
 * Declarative JSON syntax
@@ -29,7 +36,9 @@ Features:
  * Peruse the [wiki](https://github.com/xeolabs/actorjs/wiki) for documentation and examples
  * Browse the [xeoEngine](https://github.com/xeolabs/xeoEngine) source code for an example of what you can build
 
-## Example 1: Hello, World
+## Examples
+
+### Example 1: Hello, World
 
 Check out this super basic example - we'll define a simple actor type
 which will publish whatever we tell it to say:
@@ -78,7 +87,7 @@ stage.call("dilbert.saySomething", {
 ```
 [[Run this example]](http://xeolabs.github.com/actorjs/helloWorld.html)
 
-## Example 2: Actor Hierarchies
+### Example 2: Actor Hierarchies
 
 Typically you would compose actors into hierarchies, then use paths into the hierarchies to resolve actor methods and topics.
 As before, define the "person" actor type:
@@ -169,7 +178,7 @@ stage.call("group.saySomething", {
 
 [[Run this example]](http://xeolabs.github.com/actorjs/examples/actorHierarchies.html)
 
-## Example 3: Using RequireJS
+### Example 3: Using RequireJS
 
 ActorJS encourages you create libraries of reusable actor types, to instantiate as required for each application.
 
@@ -236,7 +245,7 @@ types as plain JavaScript libs that use ```ActorJS.addActorType```, then compres
  can just instantiate actor types and use them immediately without having to synchronise with their appearance. Behind the scenes,
  ActorJS will buffer everything until the actor types load and instances exist.
 
-## Example 4: JSON Includes
+### Example 4: JSON Includes
 For a higher level of reuse, we can create libraries of JSON components then pull them into our actor graphs as **includes**.
 
 First, let's create a ```people/person``` actor type. Just for fun, let's make it an AMD module like before (in [actors/people/person.js](examples/actors/people/person.js)):
@@ -323,7 +332,7 @@ stage.call("foo.saySomething", {
 ```
 [[Run this example]](http://xeolabs.github.com/actorjs/examples/actorIncludes.html)
 
-## Example 5: Client/server on HTML5 Web Messaging API
+### Example 5: Client/server on HTML5 Web Messaging API
 
 ActorJS's API allows (encourages) us to drive everything remotely via messages.
 
@@ -417,7 +426,7 @@ for xeoEngine (built on ActorJS) [like this](http://xeolabsblog.blogspot.de/2013
 
 [[Run this example]](http://xeolabs.github.com/actorjs/examples/client.html)
 
-## Example 6: Injecting Resources
+### Example 6: Injecting Resources
 Actors can manage JavaScript objects for their children to use. We'll build on [example 2](#example-2-actor-hierarchies),
 this time with a resource object that the children will send messages through.
 
