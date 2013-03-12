@@ -171,6 +171,7 @@ stage.call("group.saySomething", {
 # Example 3: Using RequireJS
 
 ActorJS encourages you create libraries of reusable actor types, to instantiate as required for each application.
+
 Lets do a variation on [Example 1](#example-1-hello-world), this time providing the "person" actor type as an AMD module (in [actors/people/person.js](examples/actors/people/person.js)):
 
 ```javascript
@@ -328,8 +329,7 @@ First, whip up a page that exposes an ActorJS stage to Web Message clients:
 </html>
 ```
 Then we'll make a client page which will embed our server page in an iframe and drive it remotely, just as if
-if the ActorJS environment was actually in the client page. We'll make [Example 1](#example-1-hello-world) again
-(but this time remotely via messages!):
+if the ActorJS environment was actually in the client page. We'll make a variation on [Example 2](#example-2-actor-hierarchies):
 ```html
 <html>
 <head>
@@ -344,17 +344,29 @@ if the ActorJS environment was actually in the client page. We'll make [Example 
         });
 
         client.call("addActor", {
-            id:"dilbert",
-            type:"person",
-            myName:"Dilbert"
+            id:"boss",
+            type:"people/person",
+            myName:"Boss",
+            actors: [
+                {
+                    id: "Dilbert",
+                    type: "people/person",
+                    myName: "Dilbert"
+                },
+                {
+                    id: "Phil",
+                    type: "people/person",
+                    myName: "Phil"
+                }
+            ]
         });
 
-        client.subscribe("dilbert.saidSomething",
+        client.subscribe("boss.dilbert.saidSomething",
             function (params) {
                 alert(params.message);
             });
 
-        client.call("dilbert.saySomething", {
+        client.call("boss.dilbert.saySomething", {
             message:"Hello, World!"
         });
 
