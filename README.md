@@ -9,7 +9,7 @@ subscribe to their publications, delete them, and so forth.
 ActorJS is being developed in the context of [xeoEngine](https://github.com/xeolabs/xeoEngine), a WebGL-based engine which lets us
 assemble and drive 3D worlds over a network.
 
-**Contents**
+# Contents
 
 * [Features](#features)
 * [Documentation](#documentation)
@@ -23,6 +23,7 @@ assemble and drive 3D worlds over a network.
 * [Configuration](#configuration)
 * [License](#license)
 * [Inspirations](#inspirations)
+
 
 ----------------------------------------------------------------------
 
@@ -41,9 +42,10 @@ assemble and drive 3D worlds over a network.
 
 # Documentation
 
- * Consult the [API docs](http://xeolabs.github.com/actorjs/docs/) (work in progress!)
+ * This page is the guide book
+ * Consult the [JavaScript API docs](http://xeolabs.github.com/actorjs/docs/) (work in progress!)
  * Peruse the [wiki](https://github.com/xeolabs/actorjs/wiki) for documentation and examples
- * Browse the [xeoEngine](https://github.com/xeolabs/xeoEngine) source code for an example of what you can build
+ * Browse the [xeoEngine](https://github.com/xeolabs/xeoEngine) project code for an example of what you can build
 
 # Examples
 
