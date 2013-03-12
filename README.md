@@ -14,10 +14,10 @@ Features:
 
 * [Actor hierarchies](#example-2-actor-hierarchies)
 * Declarative JSON syntax
-* JSON-RPC + publish/subscribe API (completely message-driven)
+* Asynchronous JSON-RPC + publish/subscribe API (completely message-driven)
 * [Custom actor types](#example-1-hello-world)
-* [Actor type libraries loaded on demand](#example-3-using-requirejs) (eg. from AMD modules)
-* [Promise-based synchronisation](http://bit.ly/s5Ktl) (no callbacks needed anywhere)
+* [Actor type libraries, loaded on demand](#example-3-using-requirejs) (eg. from AMD modules)
+* [Promise-based synchronisation](http://bit.ly/s5Ktl) (instantiate actors and fire calls and subs at them without waiting)
 * Multiple actor containers
 * [Use 'includes' to compose actor hierarchies from JSON libraries](#example-4-json-includes)
 * [Client/server on HTML5 Web Message API](#example-5-clientserver-on-html5-web-messaging-api)
