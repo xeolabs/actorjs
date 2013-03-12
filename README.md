@@ -10,6 +10,7 @@ ActorJS is being developed in the context of [xeoEngine](https://github.com/xeol
 assemble and drive 3D worlds over a network.
 
 **Contents**
+
 * [Features](#features)
 * [Documentation](#documentation)
 * [Examples](#examples)
@@ -17,7 +18,7 @@ assemble and drive 3D worlds over a network.
 * [License](#license)
 * [Inspirations](#inspirations)
 
-## Features:
+# Features:
 
 * [Actor hierarchies](#example-2-actor-hierarchies)
 * Declarative JSON syntax
@@ -30,13 +31,13 @@ assemble and drive 3D worlds over a network.
 * [Client/server on HTML5 Web Message API](#example-5-clientserver-on-html5-web-messaging-api)
 * [Inject resources for actors](#example-6-injecting-resources)
 
-## Documentation
+# Documentation
 
  * Consult the [API docs](http://xeolabs.github.com/actorjs/docs/) (work in progress!)
  * Peruse the [wiki](https://github.com/xeolabs/actorjs/wiki) for documentation and examples
  * Browse the [xeoEngine](https://github.com/xeolabs/xeoEngine) source code for an example of what you can build
 
-## Examples
+# Examples
 
 ### Example 1: Hello, World
 
@@ -569,11 +570,11 @@ ActorJS.configure({
 });
 ```
 
-## License
+# License
 ActorJS is licensed under both the [GPL](https://github.com/xeolabs/actorjs/blob/master/licenses/GPL_LICENSE.txt)
 and [MIT](https://github.com/xeolabs/actorjs/blob/master/licenses/MIT_LICENSE.txt) licenses.
 Pick whichever of those fits your needs.
 
-## Inspirations
+# Inspirations
  * The JSON-based actor hierarchy is inspired in part by [Unveil.js](https://github.com/michael/unveil)
  * The asynchronous JSON-RPC + publish/subscribe is inspired by [Autobahn.JS](http://autobahn.ws/js)
