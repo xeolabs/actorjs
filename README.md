@@ -361,6 +361,8 @@ What's cool here is that the client page only depends on the ActorJS [client lib
 meaning that the client bits can be embedded in blogs and code sharing sites like [CodePen](http://codepen.io), without having
 to upload all your actor's dependencies there (image files etc).
 
+[Run it here](http://xeolabs.github.com/actorjs/examples/client.html)
+
 ## Example 6: Injecting resources
 Actors can manage JavaScript objects for their children to use. We'll build on [example 2](#example-2-actor-hierarchies),
 this time with a resource object that the children will send messages through.
@@ -379,7 +381,7 @@ ActorJS.addActorType("person",
         };
 });
 ```
-Next, define a "group" actor which injects a messaging resource where the child actor can get it.
+Next, define a "group" actor which injects the resource where the children can get it.
 The resource is just a simple JavaScript object with a ```saySomething``` method:
 ```javascript
 ActorJS.addActorType("group",
@@ -416,9 +418,6 @@ ActorJS.addActorType("group",
 ```
 And finally, just like before, create the "group" actor, do the subscriptions and call:
 ```javascript
-Create a stage and add the "group" actor:
-
-```javascript
 var stage = ActorJS.createStage();
 
 stage.call("addActor", {
@@ -447,19 +446,12 @@ stage.call("group.saySomething", {
      message:"Hello, World!"
 });
 ```
-```
 
-
-
-### What else can I do?
-
- * [Actor trees](http://xeolabs.github.com/actorjs/examples/actorHierarchy.html)
- * [Inject resources](http://xeolabs.github.com/actorjs/examples/actorResources.html)
- * [Distribute actors across multiple documents using Web Messaging](http://xeolabs.github.com/actorjs/examples/client.html)
- * [Load actor types from AMD modules](http://xeolabs.github.com/actorjs/examples/actorModules.html)
- * [Compose actor trees using JSON includes](http://xeolabs.github.com/actorjs/examples/actorIncludes.html)
+[Run it here](http://xeolabs.github.com/actorjs/examples/actorResources.html)
 
 ## Documentation
+
+ * Consult the [API docs](http://xeolabs.github.com/actorjs/docs/) (work in progress!)
  * Peruse the [wiki](https://github.com/xeolabs/actorjs/wiki) for documentation and examples
  * Browse the [xeoEngine](https://github.com/xeolabs/xeoEngine) source code for an example of what you can build
 
