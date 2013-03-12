@@ -278,7 +278,21 @@ Next, lets create a JSON component (in [includes/people/pointyHairedBoss.json](e
 * The root actor in this component has no ID - each time we include one of these, we're creating a separate instance of it,
 which will get its own ID.
 
-Next, configure ActorJS with the base directory where our JSON components live:
+Then point RequireJS at the base directory:
+```javascript
+requirejs.config({
+    baseUrl:"."
+});
+```
+Configure ActorJS with a loader that wraps RequireJS:
+```javascript
+ActorJS.configure({
+    typeLoader:function (path, ok, error) {
+        require(["actors/" + path], ok, error);
+    }
+});
+```
+Configure ActorJS with the base directory where our JSON components live:
 ```javascript
 ActorJS.configure({
     includePath:"includes/"
