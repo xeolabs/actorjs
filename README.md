@@ -502,6 +502,63 @@ stage.call("group.saySomething", {
 
 [[Run this example]](http://xeolabs.github.com/actorjs/examples/actorResources.html)
 
+# Configuration
+The examples above show most of the configurables, but here's some examples of those in an orderly fashion:
+
+### Path Delimiters
+
+Configure ActorJS to use '/' as the delimiter character on paths to everything (actor types, JSON includes, actor methods, subscription topics etc.):
+```javascript
+ActorJS.configure({
+    pathSeparator:"/"
+});
+```
+
+### JSON Include Loader
+
+By default, ActorJS has it's own [JSON include](#example-4-json-includes) loader, which uses an XMLHTTPRequest.
+You can plug in your own like this (which happens to be the same as ActorJS' default one):
+
+```javascript
+ActorJS.configure({
+    includeLoader:function (path, ok, error) {
+        var jsonFile = new XMLHttpRequest();
+        jsonFile.overrideMimeType("application/json");
+        jsonFile.open("GET", ActorJS._includePath + path, true);
+        jsonFile.onreadystatechange = function () {
+            if (jsonFile.readyState == 4) {
+                var json = JSON.parse(jsonFile.responseText);
+                ok(json);
+            }
+        };
+        jsonFile.send(null);
+    }
+});
+```
+
+### JSON Include Path
+
+Configure ActorJS to find [JSON includes](#example-4-json-includes) relative to the given base directory:
+```javascript
+ActorJS.configure({
+    includePath:"includes/"
+});
+```
+
+### Actor Type Loader
+
+By default, ActorJS has no actor type loader. If you want to [load types on demand](#example-3-using-requirejs) from resources like AMD modules,
+instead of [defining them in-code](#example-1-hello-world), you'll need to configure a loader.
+As an example - configure ActorJS to load actor types from AMD modules via RequireJS:
+
+```javascript
+ActorJS.configure({
+    typeLoader:function (path, ok, error) {
+        require([path], ok, error);
+    }
+});
+```
+
 ## License
 ActorJS is licensed under both the [GPL](https://github.com/xeolabs/actorjs/blob/master/licenses/GPL_LICENSE.txt)
 and [MIT](https://github.com/xeolabs/actorjs/blob/master/licenses/MIT_LICENSE.txt) licenses.
