@@ -239,7 +239,7 @@ types as plain JavaScript libs that use ```ActorJS.addActorType```, then compres
 ## Example 4: JSON Includes
 For a higher level of reuse, we can create libraries of JSON components then pull them into our actor graphs as **includes**.
 
-First, let's create a ```people/person``` actor type. Just for fun, let's make it an AMD module like before:
+First, let's create a ```people/person``` actor type. Just for fun, let's make it an AMD module like before (in [actors/people/person.js](examples/actors/people/person.js)):
 ```javascript
 define(function () {
 
