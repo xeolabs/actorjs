@@ -481,3 +481,4 @@ Pick whichever of those fits your needs.
 
 ## Inspirations
  * The JSON-based actor hierarchy is inspired in part by [Unveil.js](https://github.com/michael/unveil)
+ * The asynchronous JSON-RPC + publish/subscribe is inspired by [Autobahn.JS](http://autobahn.ws/js)
