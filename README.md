@@ -16,13 +16,13 @@ Features:
 * Declarative JSON syntax
 * JSON-RPC + publish/subscribe API (completely message-driven)
 * Custom actor types
-* Loaded actor types on demand (eg. from RequireJS modules)
+* Load actor types on demand (eg. from RequireJS modules)
 * Multiple actor stages (containers for actors)
 * Use 'includes' to compose actor hierarchies from JSON libraries
 * Client/server on HTML5 Web Message API
 
 
-## Example #1: Hello, World
+## Example 1: Hello, World
 
 Check out this super basic example - we'll define a simple actor type
 which will publish whatever we tell it to say:
@@ -41,12 +41,9 @@ ActorJS.addActorType("person",
     });
 ```
 
-Create an instance of the type:
+Now create a stage and add an instance of the actor type:
 
 ```javascript
-
-/* Create a stage
- */
 var stage = ActorJS.createStage();
 
 stage.call("addActor", {
@@ -72,12 +69,103 @@ stage.call("dilbert.saySomething", {
     message:"Hello, World!"
 });
 ```
-
 [Run it here](http://xeolabs.github.com/actorjs/helloWorld.html)
 
-# Example 2: Hello World using RequireJS
+# Example 2: Actor Hierarchies
 
-Now let's define the "person" actor type as an AMD module in [actors/people/person.js](examples/actors/people/person.js):
+Typically you would compose actors into hierarchies, then use paths into the hierarchies to resolve actor methods and topics.
+As before, define the "person" actor type:
+
+```javascript
+ActorJS.addActorType("person",
+    function (cfg) {
+
+        var myName = cfg.myName;
+
+        this.saySomething = function (params) {
+            this.publish("saidSomething", {
+                message:myName + " says: " + params.message
+            });
+        };
+    });
+```
+
+Then define a "group" actor type, which creates and manages two "person" actors:
+
+```javascript
+ActorJS.addActorType("group",
+    function (cfg) {
+
+        var myName = cfg.myName;
+
+        this.addActor({
+            id:"foo",
+            type:"person",
+            myName:"Foo"
+        });
+
+        this.addActor({
+            id:"bar",
+            type:"person",
+            myName:"Bar"
+        });
+
+        this.saySomething = function (params) {
+
+            this.call("foo.saySomething", params);
+            this.call("bar.saySomething", params);
+
+            this.publish("saidSomething", {
+                message:myName + " says: " + params.message
+            });
+        };
+    });
+```
+Create a stage and add the "group" actor:
+
+```javascript
+var stage = ActorJS.createStage();
+
+stage.call("addActor", {
+    id:"group",
+    type:"group",
+    myName:"Group"
+});
+```
+Subscribe to the message the 'group' actor will publish on behalf of either of its child 'person' actors:
+```javascript
+stage.subscribe("group.saidSomething",
+     function (params) {
+         alert(params.message);
+     });
+```
+Subscribe to the message the 'group' actor's first child 'person' actor will publish
+```javascript
+stage.subscribe("group.foo.saidSomething",
+     function (params) {
+         alert(params.message);
+     });
+```
+Subscribe to the message the 'group' actor's second child 'person' actor will publish
+```javascript
+stage.subscribe("group.bar.saidSomething",
+    function (params) {
+        alert(params.message);
+    });
+```
+Call the 'group' actor's 'saySomething' method, which calls that method in turn on both of its child 'person'actors
+```javascript
+stage.call("group.saySomething", {
+     message:"Hello, World!"
+});
+```
+
+[Run it here](http://xeolabs.github.com/actorjs/examples/actorHierarchies.html)
+
+# Example 3: Using RequireJS
+
+ActorJS encourages you create libraries of reusable actor types, to instantiate as required for each application.
+Lets do a variation on Example 1, this time providing the "person" actor type as an AMD module (in [actors/people/person.js](examples/actors/people/person.js)):
 
 ```javascript
 define(function () {
@@ -106,15 +194,15 @@ ActorJS.configure({
     }
 });
 ```
-Now, as before, create a stage and add an instance of our actor. See how the ```type``` property resolves to our AMD
+Now create a stage and add an instance of our actor type. See how the ```type``` property resolves to our AMD
 module. You can configure ActorJS to use slashes to delimit paths, but I found that dots just look nicer and have a more
  objecty-feel.
 ```javascript
 var stage = ActorJS.createStage();
 
 stage.call("addActor", {
-    type:"people.person",
     id:"foo",
+    type:"people.person",
     myName:"Foo"
 });
 ```
@@ -131,7 +219,67 @@ stage.call("foo.saySomething", {
     message:"Hello, World!"
 });
 ```
-[Run it here](http://xeolabs.github.com/actorjs/actorModules.html)
+[Run it here](http://xeolabs.github.com/actorjs/examples/actorModules.html)
+
+## Example 4: JSON Includes
+For a higher level of reuse, we can create libraries of JSON components then pull them into our actor graphs as **includes**.
+
+
+Lets create a hierarchy of three "person" actor type as a JSON component (in [includes/people/pointyHairedBoss.json](examples/includes/people/pointyHairedBoss.json)):
+
+```json
+{
+    "type":"person",
+    "myName":"Pointy Haired Boss",
+
+    "actors":[
+        {
+            "id":"dilbert",
+            "type":"person",
+            "myName":"Dilbert"
+        },
+        {
+            "id":"phil",
+            "type":"person",
+            "myName":"Phil"
+        }
+    ]
+}
+```
+Note that the root actor has no ID - each time we include one of these components, we're creating a separate instance of it,
+which will get it's own ID. Then configure ActorJS with the base directory where our JSON components live:
+```javascript
+ActorJS.configure({
+    includePath:"includes/"
+});
+```
+Now create a stage and add an instance of our actor type. See how the ```type``` property resolves to our AMD
+module. You can configure ActorJS to use slashes to delimit paths, but I found that dots just look nicer and have a more
+ objecty-feel.
+```javascript
+var stage = ActorJS.createStage();
+
+stage.call("addActor", {
+    id:"boss",
+    include:"people.pointyHairedBoss",
+    myName:"Boss"
+});
+```
+Subscribe to the message the actor will publish:
+```javascript
+stage.subscribe("foo.saidSomething",
+    function (params) {
+        alert(params.message);
+    });
+```
+And finally, fire a call at the actor to make it say hello:
+```javascript
+stage.call("foo.saySomething", {
+    message:"Hello, World!"
+});
+```
+[Run it here](http://xeolabs.github.com/actorjs/examples/actorIncludes.html)
+
 
 ### What else can I do?
 
