@@ -229,10 +229,10 @@ stage.call("foo.saySomething", {
 ```
 [[Run this example]](http://xeolabs.github.com/actorjs/examples/actorModules.html)
 
-* ActorJS will cache the "people.person" actor type the first time it's loaded, which offsets the XHR overhead if we instantiate the type many times.
+* ActorJS will cache the ```people.person``` actor type the first time it's loaded, which offsets the XHR overhead if we instantiate the type many times.
 * Still, if you want better performance and don't care about hot-loading actor types on demand, then you can define your actor
 types as plain JavaScript libs that use ```ActorJS.addActorType```, then compress and concatenate them into one lib and load that statically.
-* ActorJS uses [promises](http://en.wikipedia.org/wiki/Promise_(programming)) for calls and subscriptions. That means we
+* ActorJS uses [promises](http://bit.ly/s5Ktl) for calls and subscriptions. That means we
  can just instantiate actor types and use them immediately without having to synchronise with their appearance. Behind the scenes,
  ActorJS will buffer everything until the actor types load and instances exist.
 
