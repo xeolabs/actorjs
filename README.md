@@ -507,7 +507,8 @@ The examples above show most of the configurables, but here's some examples of t
 
 ### Path Delimiters
 
-Configure ActorJS to use '/' as the delimiter character on paths to everything (actor types, JSON includes, actor methods, subscription topics etc.):
+By default, ActorJS uses '/' as the delimiter character on paths to everything (actor types, JSON includes, actor methods, subscription topics etc.).
+You can configure that char to be something else, like this:
 ```javascript
 ActorJS.configure({
     pathSeparator:"/"
