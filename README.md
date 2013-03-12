@@ -75,7 +75,7 @@ stage.call("dilbert.saySomething", {
     message:"Hello, World!"
 });
 ```
-[[Run this example]](http://xeolabs.github.com/actorjs/helloWorld.html)
+**[[Run this example]]**(http://xeolabs.github.com/actorjs/helloWorld.html)
 
 # Example 2: Actor Hierarchies
 
@@ -166,7 +166,7 @@ stage.call("group.saySomething", {
 });
 ```
 
-[[Run this example]](http://xeolabs.github.com/actorjs/examples/actorHierarchies.html)
+**[[Run this example]]**(http://xeolabs.github.com/actorjs/examples/actorHierarchies.html)
 
 # Example 3: Using RequireJS
 
@@ -226,7 +226,7 @@ stage.call("foo.saySomething", {
     message:"Hello, World!"
 });
 ```
-[[Run this example]](http://xeolabs.github.com/actorjs/examples/actorModules.html)
+**[[Run this example]]**(http://xeolabs.github.com/actorjs/examples/actorModules.html)
 
 ## Example 4: JSON Includes
 For a higher level of reuse, we can create libraries of JSON components then pull them into our actor graphs as **includes**.
@@ -286,7 +286,7 @@ stage.call("foo.saySomething", {
     message:"Hello, World!"
 });
 ```
-[[Run this example]](http://xeolabs.github.com/actorjs/examples/actorIncludes.html)
+**[[Run this example]]**(http://xeolabs.github.com/actorjs/examples/actorIncludes.html)
 
 ## Example 5: Client/server on HTML5 Web Messaging API
 
@@ -379,7 +379,7 @@ meaning that the client bits can be embedded in blogs and code sharing sites lik
 to upload all your actors' dependencies there (image files etc). This has proved useful for sharing examples
 for xeoEngine (built on ActorJS) [like this](http://xeolabsblog.blogspot.de/2013/02/xeoengine-is-message-driven-webgl.html).
 
-[[Run this example]](http://xeolabs.github.com/actorjs/examples/client.html)
+**[[Run this example]]**(http://xeolabs.github.com/actorjs/examples/client.html)
 
 ## Example 6: Injecting resources
 Actors can manage JavaScript objects for their children to use. We'll build on [example 2](#example-2-actor-hierarchies),
@@ -464,7 +464,7 @@ stage.call("group.saySomething", {
 });
 ```
 
-[[Run this example]](http://xeolabs.github.com/actorjs/examples/actorResources.html)
+**[[Run this example]]**(http://xeolabs.github.com/actorjs/examples/actorResources.html)
 
 ## License
 ActorJS is licensed under both the [GPL](https://github.com/xeolabs/actorjs/blob/master/licenses/GPL_LICENSE.txt)
