@@ -263,7 +263,6 @@ ActorJS.configure({
 });
 ```
 Now create a stage and include the component. See how the ```include``` property resolves to our JSON file:
- objecty-feel.
 ```javascript
 var stage = ActorJS.createStage();
 
