@@ -283,9 +283,11 @@ stage.call("foo.saySomething", {
 
 ## Example 5: Client/server on HTML5 Web Messaging API
 
-ActorJS's message-driven JSON API allows us to drive everything remotely via the HTML5 Web Messaging API.
+ActorJS's API allows (encourages) us to drive everything remotely via messages.
 
-First, whip up a page that serves an ActorJS stage:
+Let's create an example on the HTML5 Web Messaging API, building on concepts introduced in the previous examples.
+
+First, whip up a page that exposes an ActorJS stage to Web Message clients:
 
 ```html
 <html>
@@ -295,15 +297,24 @@ First, whip up a page that serves an ActorJS stage:
 </head>
 <body>
 <script>
+
+    // We'll use RequireJS to hot-load actor types.
+    // Tell it where to find them:
     requirejs.config({
         baseUrl:"actors/"
     });
+
+    // Plug a loader into ActorJS:
     ActorJS.configure({
         typeLoader:function (path, ok, error) {
             require([path], ok, error);
         }
     });
+
+    // Create a stage to contain actors:
     var stage = ActorJS.createStage();
+
+    // Serve the stage to Web Message clients:
     var server = new ActorJS.WebMessageServer(stage);
 
 </script>
@@ -311,7 +322,7 @@ First, whip up a page that serves an ActorJS stage:
 </html>
 ```
 Then we'll make a client page which will embed our server page in an iframe and drive it remotely, just as if
-if the ActorJS environment was actually in the client page:
+if the ActorJS environment was actually in the client page. We'll make Example 1 again (but this time remotely via messages!):
 ```html
 <html>
 <head>
@@ -319,11 +330,6 @@ if the ActorJS environment was actually in the client page:
 </head>
 <body>
     <iframe id="myIFrame" src="server.html"></iframe>
-```
-We'll make Example 1 again (but this time remotely via messages!):
-
-```html
-
     <script>
 
         var client = new ActorJSWebMessageClient({
