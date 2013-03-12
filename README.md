@@ -168,7 +168,7 @@ stage.call("group.saySomething", {
 
 [[Run this example]](http://xeolabs.github.com/actorjs/examples/actorHierarchies.html)
 
-# Example 3: Using RequireJS
+## Example 3: Using RequireJS
 
 ActorJS encourages you create libraries of reusable actor types, to instantiate as required for each application.
 
