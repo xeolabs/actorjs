@@ -12,13 +12,13 @@ assemble and drive 3D worlds over a network.
 Features:
 --------------------------------------------------------------------------------
 
-* Actor hierarchies
+* [Actor hierarchies](#example-2-actor-hierarchies)
 * Declarative JSON syntax
 * JSON-RPC + publish/subscribe API (completely message-driven)
 * Custom actor types
-* Load actor types on demand (eg. from RequireJS modules)
+* [Load actor types on demand (eg. from RequireJS modules)](#example-3-using-requirejs)
 * Multiple actor stages (containers for actors)
-* Use 'includes' to compose actor hierarchies from JSON libraries
+* [Use 'includes' to compose actor hierarchies from JSON libraries](#example-4-json-includes)
 * Client/server on HTML5 Web Message API
 
 
@@ -225,7 +225,7 @@ stage.call("foo.saySomething", {
 For a higher level of reuse, we can create libraries of JSON components then pull them into our actor graphs as **includes**.
 
 
-Lets create a hierarchy of three "person" actor type as a JSON component (in [includes/people/pointyHairedBoss.json](examples/includes/people/pointyHairedBoss.json)):
+Lets create a hierarchy of three "person" actor types, as a JSON component (in [includes/people/pointyHairedBoss.json](examples/includes/people/pointyHairedBoss.json)):
 
 ```json
 {
@@ -247,14 +247,15 @@ Lets create a hierarchy of three "person" actor type as a JSON component (in [in
 }
 ```
 Note that the root actor has no ID - each time we include one of these components, we're creating a separate instance of it,
-which will get it's own ID. Then configure ActorJS with the base directory where our JSON components live:
+which will get its own ID.
+
+Next, configure ActorJS with the base directory where our JSON components live:
 ```javascript
 ActorJS.configure({
     includePath:"includes/"
 });
 ```
-Now create a stage and add an instance of our actor type. See how the ```type``` property resolves to our AMD
-module. You can configure ActorJS to use slashes to delimit paths, but I found that dots just look nicer and have a more
+Now create a stage and include the component. See how the ```include``` property resolves to our JSON file:
  objecty-feel.
 ```javascript
 var stage = ActorJS.createStage();
