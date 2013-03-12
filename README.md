@@ -9,7 +9,20 @@ subscribe to their publications, delete them, and so forth.
 ActorJS is being developed in the context of [xeoEngine](https://github.com/xeolabs/xeoEngine), a WebGL-based engine from xeoLabs which lets us
 assemble and drive 3D worlds over a network.
 
-## Hello, World!
+Features:
+--------------------------------------------------------------------------------
+
+* Actor hierarchies
+* Declarative JSON syntax
+* JSON-RPC + publish/subscribe API (completely message-driven)
+* Custom actor types
+* Loaded actor types on demand (eg. from RequireJS modules)
+* Multiple actor stages (containers for actors)
+* Use 'includes' to compose actor hierarchies from JSON libraries
+* Client/server on HTML5 Web Message API
+
+
+## Example #1: Hello, World
 
 Check out this super basic example - we'll define a simple actor type
 which will publish whatever we tell it to say:
@@ -62,11 +75,63 @@ stage.call("dilbert.saySomething", {
 
 [Run it here](http://xeolabs.github.com/actorjs/helloWorld.html)
 
-Coolnesses to note in this example:
- * We're instantiating actors and calling methods and subscribing to subscriptions on them asynchronously.
- * Actor types can also be dynamically loaded on demand, such as from AMD modules.
- * Those calls and subscriptions can be made immediately (i.e. asynchronously) because ActorJS buffers those until the actor exists.
- * We're using a dot for the delimiter on paths to actor types, instances, methods and topics - that can be configured to be "/" if preferred, but a dot is default because it seems more readible.
+# Example 2: Hello World using RequireJS
+
+Now let's define the "person" actor type as an AMD module in [actors/people/person.js](examples/actors/people/person.js):
+
+```javascript
+define(function () {
+
+    return function (cfg) {
+
+        var myName = cfg.myName;
+
+        this.saySomething = function (params) {
+            this.publish("saidSomething", { message:myName + " says: " + params.message });
+        };
+    };
+});
+```
+Point RequireJS at the base directory where the actor type lives:
+```javascript
+requirejs.config({
+    baseUrl:"actors/"
+});
+```
+Configure ActorJS with a loader that wraps RequireJS:
+```javascript
+ActorJS.configure({
+    typeLoader:function (path, ok, error) {
+        require([path], ok, error);
+    }
+});
+```
+Now, as before, create a stage and add an instance of our actor. See how the ```type``` property resolves to our AMD
+module. You can configure ActorJS to use slashes to delimit paths, but I found that dots just look nicer and have a more
+ objecty-feel.
+```javascript
+var stage = ActorJS.createStage();
+
+stage.call("addActor", {
+    type:"people.person",
+    id:"foo",
+    myName:"Foo"
+});
+```
+Subscribe to the message the actor will publish:
+```javascript
+stage.subscribe("foo.saidSomething",
+    function (params) {
+        alert(params.message);
+    });
+```
+And finally, fire a call at the actor to make it say hello:
+```javascript
+stage.call("foo.saySomething", {
+    message:"Hello, World!"
+});
+```
+[Run it here](http://xeolabs.github.com/actorjs/actorModules.html)
 
 ### What else can I do?
 
