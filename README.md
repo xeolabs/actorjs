@@ -374,9 +374,10 @@ if the ActorJS environment was actually in the client page. We'll make a variati
 </body>
 </html>
 ```
-What's cool here is that the client page only depends on the ActorJS [client library](https://github.com/xeolabs/actorjs/blob/master/build/actorjs-webMessageClient.js),
+The coolness here is that the client page only depends on the ActorJS [client library](https://github.com/xeolabs/actorjs/blob/master/build/actorjs-webMessageClient.js),
 meaning that the client bits can be embedded in blogs and code sharing sites like [CodePen](http://codepen.io), without having
-to upload all your actor's dependencies there (image files etc).
+to upload all your actors' dependencies there (image files etc). This has proved useful for sharing examples
+for xeoEngine (built on ActorJS) [like this](http://xeolabsblog.blogspot.de/2013/02/xeoengine-is-message-driven-webgl.html).
 
 [Run it here](http://xeolabs.github.com/actorjs/examples/client.html)
 
